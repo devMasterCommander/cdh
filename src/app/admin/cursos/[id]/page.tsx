@@ -272,7 +272,7 @@ export default function CursoDetailPage({ params }: Params) {
                   placeholder="Nombre del módulo"
                   value={moduleForm.name}
                   onChange={(e) => setModuleForm({ name: e.target.value })}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
                 <button
                   type="submit"
@@ -341,7 +341,7 @@ export default function CursoDetailPage({ params }: Params) {
                           placeholder="Nombre de la lección"
                           value={lessonForm.name}
                           onChange={(e) => setLessonForm({ ...lessonForm, name: e.target.value })}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
                         />
                         <input
                           type="text"
@@ -349,7 +349,7 @@ export default function CursoDetailPage({ params }: Params) {
                           placeholder="ID del video de Vimeo (ej: 123456789)"
                           value={lessonForm.vimeoVideoId}
                           onChange={(e) => setLessonForm({ ...lessonForm, vimeoVideoId: e.target.value })}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
                         />
                         <button
                           type="submit"

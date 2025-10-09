@@ -118,7 +118,7 @@ export default function EditCursoPage({ params }: Params) {
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="Ej: Módulo 1: Introducción al Desarrollo Humano"
             />
           </div>
@@ -141,7 +141,7 @@ export default function EditCursoPage({ params }: Params) {
               onChange={(e) =>
                 setFormData({ ...formData, price: e.target.value })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="50.00"
             />
           </div>
