@@ -1,0 +1,180 @@
+---
+globs: *.ts,*.tsx
+---
+
+# Reglas para TypeScript y Next.js
+
+## Convenciones de Código TypeScript
+
+### General
+- SIEMPRE usa punto y coma (`;`) al final de las declaraciones
+- Usa `const` por defecto, `let` solo cuando sea necesario reasignar
+- NUNCA uses `var`
+- Prefiere arrow functions sobre function declarations
+- Usa tipos explícitos en parámetros de función y valores de retorno públicos
+
+### Naming Conventions
+- **Componentes React**: PascalCase (ej: `VideoPlayer`, `LessonCard`)
+- **Funciones/Variables**: camelCase (ej: `getUserData`, `courseId`)
+- **Constantes**: UPPER_SNAKE_CASE (ej: `API_BASE_URL`, `MAX_RETRIES`)
+- **Tipos/Interfaces**: PascalCase con prefijo `I` opcional (ej: `User`, `IUserProps`)
+- **Archivos**: kebab-case para utilidades, PascalCase para componentes
+
+### Async/Await
+- Prefiere `async/await` sobre `.then()/.catch()`
+- SIEMPRE maneja errores con try/catch en funciones async
+- En Server Components de Next.js, marca la función como async
+
+## Next.js 15 App Router
+
+### Server Components (Por Defecto)
+```tsx
+// CORRECTO - Server Component
+export default async function Page({ params }: Props) {
+  const { courseId } = await params; // ✅ Await params en Next.js 15
+  const data = await fetchData(courseId);
+  return <div>{data.title}</div>;
+}
+```
+
+### Client Components
+```tsx
+// CORRECTO - Client Component
+'use client';
+
+import { useState } from 'react';
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+
+### Parámetros Dinámicos
+```tsx
+// ✅ CORRECTO en Next.js 15
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function Page({ params }: Props) {
+  const { id } = await params; // Await requerido
+}
+
+// ❌ INCORRECTO (genera warning)
+export default function Page({ params }: { params: { id: string } }) {
+  const { id } = params; // Sin await
+}
+```
+
+### API Routes
+```tsx
+// src/app/api/*/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    // Lógica
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Error message' }, { status: 500 });
+  }
+}
+```
+
+## Prisma
+
+### Queries Seguras
+```tsx
+// ✅ CORRECTO - Tipado automático
+const user = await prisma.user.findUnique({
+  where: { id: userId },
+  include: { 
+    purchases: true,
+    lessonProgress: true 
+  },
+});
+
+// ✅ CORRECTO - Select específico para optimizar
+const user = await prisma.user.findUnique({
+  where: { id: userId },
+  select: { 
+    id: true,
+    name: true,
+    email: true 
+  },
+});
+```
+
+### Transacciones
+```tsx
+// Para operaciones múltiples que deben ser atómicas
+await prisma.$transaction(async (tx) => {
+  await tx.purchase.create({ data: purchaseData });
+  await tx.commission.create({ data: commissionData });
+});
+```
+
+## Manejo de Errores
+
+### En Server Components
+```tsx
+export default async function Page() {
+  try {
+    const data = await fetchData();
+    return <Content data={data} />;
+  } catch (error) {
+    return <ErrorComponent message="Error al cargar datos" />;
+  }
+}
+```
+
+### En API Routes
+```tsx
+export async function POST(request: NextRequest) {
+  try {
+    // Lógica
+  } catch (error) {
+    console.error('Error:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Error desconocido' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## Importaciones
+
+### Orden de Importaciones
+1. Dependencias externas de React/Next
+2. Dependencias externas de terceros
+3. Importaciones de alias (@/)
+4. Importaciones relativas
+5. Tipos (al final o separados)
+
+```tsx
+// ✅ CORRECTO
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { prisma } from '@/lib/prisma';
+import { VideoPlayer } from '../components/VideoPlayer';
+import type { Course } from '@prisma/client';
+```
+
+## Buenas Prácticas Específicas del Proyecto
+
+### NextAuth
+- Siempre verifica la sesión antes de acceder a datos protegidos
+- Usa `getServerSession` en Server Components y API Routes
+- Usa `useSession` en Client Components
+
+### Vimeo Player
+- Importa dinámicamente el player en Client Components
+- Maneja estados de carga y error
+
+### Stripe
+- NUNCA expongas `STRIPE_SECRET_KEY` en el cliente
+- Siempre valida webhooks con la firma
+- Usa tipos de Stripe para type safety

@@ -12,13 +12,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(request: NextRequest) {
   /* inicio ejecución lógica */
   
-  // --- REACTIVAMOS EL BLOQUE DE AUTENTICACIÓN ---
+  // Verificar si hay sesión (opcional, permite compras sin login)
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    return new NextResponse('Unauthorized', { status: 401 });
-  }
+  const userId = session?.user?.id || null;
 
-  const userId = session.user.id;
   const course = {
     id: 'course_test_abc',
     name: 'Módulo 1: Introducción al Desarrollo Humano',
@@ -26,7 +23,8 @@ export async function POST(request: NextRequest) {
   };
 
   try {
-    const checkoutSession = await stripe.checkout.sessions.create({
+    // Configuración base del checkout
+    const checkoutConfig: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: [
         {
@@ -43,11 +41,21 @@ export async function POST(request: NextRequest) {
       mode: 'payment',
       success_url: `${request.nextUrl.origin}/curso?success=true`,
       cancel_url: `${request.nextUrl.origin}/curso?canceled=true`,
-      client_reference_id: userId,
       metadata: {
         courseId: course.id,
       },
-    });
+    };
+
+    // Si el usuario está logueado, vincular su ID
+    if (userId) {
+      checkoutConfig.client_reference_id = userId;
+    } else {
+      // Si NO está logueado, requerir email en el checkout
+      checkoutConfig.customer_email = undefined; // Stripe pedirá el email
+      checkoutConfig.billing_address_collection = 'required';
+    }
+
+    const checkoutSession = await stripe.checkout.sessions.create(checkoutConfig);
 
     return NextResponse.json({ url: checkoutSession.url });
 

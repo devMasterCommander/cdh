@@ -1,0 +1,108 @@
+---
+description: Deuda técnica y consideraciones futuras del proyecto
+---
+
+# Deuda Técnica y Consideraciones Futuras
+
+Estos puntos han sido **aparcados intencionalmente** para abordarlos después del MVP. No deben implementarse ahora, pero deben tenerse en cuenta para el futuro.
+
+## 🐛 Errores Conocidos a Resolver
+
+### 1. Error de `params` en Next.js
+**Problema**: Aviso en páginas dinámicas
+```
+⨯ Route "/cursos/[courseId]/leccion/[lessonId]": params should be awaited
+```
+
+**Ubicación**: 
+- [src/app/cursos/[courseId]/leccion/[lessonId]/page.tsx](mdc:src/app/cursos/[courseId]/leccion/[lessonId]/page.tsx)
+- [src/app/cursos/[courseId]/page.tsx](mdc:src/app/cursos/[courseId]/page.tsx)
+
+**Solución Pendiente**: Implementar `await params` en componentes de servidor según las nuevas guías de Next.js 15.
+
+**Prioridad**: Media (no afecta funcionalidad, solo warnings)
+
+## 🚀 Funcionalidades Pendientes
+
+### 2. Seguimiento de Progreso en Video (Vimeo)
+**Estado**: Desactivado temporalmente
+
+**Problema Actual**: La comunicación del `<iframe>` de Vimeo con nuestra API de progreso no está implementada.
+
+**Solución Planificada**: 
+- Usar la librería `Player.js` de Vimeo (@vimeo/player)
+- Escuchar eventos de `timeupdate` del reproductor
+- Enviar timestamp a `/api/progress/update-time` cada X segundos
+- Guardar último segundo visto en `LessonProgress.lastTimestamp`
+
+**Archivo Afectado**: [src/components/VideoPlayer.tsx](mdc:src/components/VideoPlayer.tsx)
+
+**Prioridad**: Alta (feature importante para UX)
+
+### 3. Social Login (Autenticación Social)
+**Estado**: No implementado
+
+**Proveedores a Añadir**:
+- ✅ Google (NextAuth ya soporta, falta configurar)
+- ⬜ Facebook
+- ⬜ GitHub (opcional)
+
+**Ubicación**: [src/app/api/auth/[...nextauth]/route.ts](mdc:src/app/api/auth/[...nextauth]/route.ts)
+
+**Requisitos**:
+- Configurar OAuth apps en cada proveedor
+- Añadir credenciales a variables de entorno
+- Actualizar configuración de NextAuth
+
+**Prioridad**: Media
+
+### 4. Pago de Comisiones a Afiliados
+**Estado**: No implementado
+
+**Funcionalidades Requeridas**:
+1. **Interfaz de Afiliado**:
+   - Dashboard con comisiones acumuladas
+   - Historial de comisiones (nivel 1, 2, 3, etc.)
+   - Botón "Solicitar Pago"
+
+2. **Lógica de Negocio**:
+   - Monto mínimo para solicitar pago
+   - Estados: `pending` → `requested` → `paid`
+   - Notificaciones email al solicitar pago
+   - Panel de administración para aprobar pagos
+
+3. **Integración con Stripe**:
+   - Stripe Connect para transferencias
+   - O registro de cuenta bancaria manual
+   - Registro de transacciones
+
+**Archivos Relacionados**:
+- [src/lib/server/commissions.ts](mdc:src/lib/server/commissions.ts) - Lógica existente
+- Nueva ruta API: `src/app/api/commissions/request-payment/route.ts`
+- Nuevo modelo: `CommissionPayment` en [schema.prisma](mdc:prisma/schema.prisma)
+
+**Prioridad**: Alta (feature core del negocio)
+
+## 📝 Mejoras de Código
+
+### 5. Optimizaciones de Rendimiento
+- Implementar lazy loading en listado de cursos
+- Optimizar queries de Prisma con `select` específicos
+- Añadir indices en tablas de BD para queries frecuentes
+
+### 6. Testing
+- Añadir tests unitarios (Jest)
+- Añadir tests de integración para API routes
+- Tests E2E con Playwright/Cypress
+
+### 7. Monitoreo y Logs
+- Implementar sistema de logging (Winston, Pino)
+- Integrar Sentry para error tracking
+- Analytics de uso de la plataforma
+
+## ⚠️ Recordatorios
+
+- **NO** implementar estas funcionalidades hasta que se soliciten explícitamente
+- **SÍ** mencionarlas si son relevantes para una discusión técnica
+- **SÍ** documentar nuevas deudas técnicas que surjan durante el desarrollo
+- Mantener este archivo actualizado con cada nueva consideración

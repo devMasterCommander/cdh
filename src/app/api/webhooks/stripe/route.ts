@@ -27,15 +27,42 @@ export async function POST(request: NextRequest) {
       console.log('4. Procesando checkout.session.completed...');
       const session = event.data.object as Stripe.Checkout.Session;
 
-      const userId = session.client_reference_id;
+      let userId = session.client_reference_id;
       const amountTotal = session.amount_total;
       const courseId = session.metadata?.courseId;
       const paymentIntentId = session.payment_intent as string;
+      const customerEmail = session.customer_email || session.customer_details?.email;
+
+      // Si NO hay userId (guest checkout), crear o encontrar usuario por email
+      if (!userId && customerEmail) {
+        console.log(`4.1 Guest checkout detectado. Email: ${customerEmail}`);
+        
+        // Buscar si ya existe un usuario con ese email
+        let user = await prisma.user.findUnique({
+          where: { email: customerEmail },
+        });
+
+        // Si no existe, crear uno nuevo
+        if (!user) {
+          console.log(`4.2 Creando nuevo usuario para email: ${customerEmail}`);
+          user = await prisma.user.create({
+            data: {
+              email: customerEmail,
+              name: session.customer_details?.name || null,
+            },
+          });
+          console.log(`✅ Usuario creado con ID: ${user.id}`);
+        } else {
+          console.log(`✅ Usuario existente encontrado con ID: ${user.id}`);
+        }
+
+        userId = user.id;
+      }
 
       if (userId && amountTotal && courseId && paymentIntentId) {
         
         /* inicio lógica de registro de compra */
-        await (prisma as any).purchase.create({
+        await prisma.purchase.create({
           data: {
             userId: userId,
             courseId: courseId,
@@ -51,6 +78,7 @@ export async function POST(request: NextRequest) {
 
       } else {
         console.error('⚠️ Faltan datos en la sesión de Stripe para procesar la compra/comisiones.');
+        console.error(`Datos recibidos: userId=${userId}, amountTotal=${amountTotal}, courseId=${courseId}, paymentIntentId=${paymentIntentId}`);
       }
     }
 

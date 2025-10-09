@@ -1,0 +1,95 @@
+---
+description: Información sobre el stack tecnológico del proyecto CDH
+---
+
+# Stack Tecnológico del Proyecto CDH
+
+El proyecto se compone de **dos repositorios** con sus respectivos stacks:
+
+## Proyecto 1: Aplicación Principal (`cdh`)
+
+**Repositorio**: `https://github.com/devMasterCommander/cdh.git`
+
+### Stack Principal
+- **Framework**: Next.js 15 (App Router)
+- **Lenguaje**: TypeScript
+- **Estilos**: Tailwind CSS v4
+- **Autenticación**: NextAuth.js v4.24.11
+- **Base de Datos**: PostgreSQL (Supabase)
+- **ORM**: Prisma v6.16.0
+- **Pagos**: Stripe v18.5.0
+- **Video Player**: Vimeo Player (@vimeo/player v2.29.6)
+- **Librerias**: https://zustand.docs.pmnd.rs/getting-started/introduction
+- shadcn/ui – https://ui.shadcn.com/
+- HeroUI – https://www.heroui.com/
+- Daisy UI (si te gusta muy out of the box) - https://daisyui.com/
+- Headless UI (si te gusta tocar todos los estilos) - https://headlessui.com/
+- Aceternity (Flashy, resultona, pero capaz de hacer arder algunos pcs) https://ui.aceternity.com/
+
+### Dependencias Clave
+```json
+{
+  "@auth/prisma-adapter": "^2.10.0",
+  "@prisma/client": "^6.16.0",
+  "@vimeo/player": "^2.29.6",
+  "next": "15.5.3",
+  "next-auth": "^4.24.11",
+  "stripe": "^18.5.0",
+  "lodash": "^4.17.21",
+  "nodemailer": "^6.10.1"
+}
+```
+
+### Estructura de Carpetas
+```
+src/
+├── app/
+│   ├── api/              # API Routes
+│   │   ├── auth/         # NextAuth endpoints
+│   │   ├── checkout_sessions/
+│   │   ├── progress/     # Progreso de lecciones
+│   │   └── webhooks/     # Stripe webhooks
+│   ├── curso/
+│   ├── cursos/[courseId]/
+│   │   └── leccion/[lessonId]/
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   └── VideoPlayer.tsx
+├── lib/
+│   ├── prisma.ts
+│   └── server/
+│       └── commissions.ts
+└── middleware.ts
+```
+
+## Proyecto 2: Panel de Administración (`cdh-admin`)
+
+**Repositorio**: `https://github.com/devMasterCommander/cdh-admin.git`
+
+### Stack Principal
+- **Framework**: Directus
+- **Base de Datos**: Supabase (PostgreSQL) - *La misma instancia que el Proyecto 1*
+- **Despliegue Local**: Docker
+- **Compartida**: Usa el mismo esquema de base de datos que `cdh`
+
+### Conexión
+- Directus se conecta a la **misma base de datos** de Supabase que usa el proyecto Next.js
+- Permite gestionar el contenido de las tablas: Course, Module, Lesson, User, etc.
+- Se ejecuta localmente en Docker en el puerto 8055
+
+## Base de Datos Compartida (Supabase/PostgreSQL)
+
+Ambos proyectos comparten la misma instancia de PostgreSQL en Supabase con el siguiente esquema:
+
+### Modelos Principales
+- **User**: Usuarios con sistema de afiliados (sponsorId)
+- **Course**: Cursos disponibles
+- **Module**: Módulos de cada curso
+- **Lesson**: Lecciones con videos de Vimeo
+- **LessonProgress**: Progreso de usuarios (timestamp, isCompleted)
+- **Purchase**: Compras vinculadas a Stripe
+- **Commission**: Comisiones de afiliados multinivel
+- **Account/Session**: Tablas de NextAuth.js
+
+Referencia: [schema.prisma](mdc:prisma/schema.prisma)
