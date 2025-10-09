@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]/route';
+import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -16,11 +17,42 @@ export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id || null;
 
-  const course = {
-    id: 'course_test_abc',
-    name: 'Módulo 1: Introducción al Desarrollo Humano',
-    priceInCents: 5000, // 50.00€
-  };
+  // Obtener courseId del body (si viene)
+  let courseIdFromBody = null;
+  try {
+    const body = await request.json();
+    courseIdFromBody = body.courseId;
+  } catch (e) {
+    // Si no hay body, usar curso por defecto
+  }
+
+  // Si hay courseId, obtener curso de la BD
+  let course;
+  if (courseIdFromBody) {
+    const courseData = await prisma.course.findUnique({
+      where: { id: courseIdFromBody },
+    });
+    
+    if (!courseData) {
+      return NextResponse.json(
+        { error: "Curso no encontrado" },
+        { status: 404 }
+      );
+    }
+    
+    course = {
+      id: courseData.id,
+      name: courseData.name,
+      priceInCents: Math.round(courseData.price * 100),
+    };
+  } else {
+    // Curso por defecto (compatibilidad con /curso hardcodeado)
+    course = {
+      id: 'course_test_abc',
+      name: 'Módulo 1: Introducción al Desarrollo Humano',
+      priceInCents: 5000, // 50.00€
+    };
+  }
 
   try {
     // Configuración base del checkout
@@ -39,8 +71,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'payment',
-      success_url: `${request.nextUrl.origin}/curso?success=true`,
-      cancel_url: `${request.nextUrl.origin}/curso?canceled=true`,
+      success_url: `${request.nextUrl.origin}/cursos/${course.id}?success=true`,
+      cancel_url: `${request.nextUrl.origin}/cursos/${course.id}?canceled=true`,
       metadata: {
         courseId: course.id,
       },
