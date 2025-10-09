@@ -41,11 +41,11 @@ export async function GET(request: NextRequest) {
           _count: true,
         });
 
-        // Comisiones pendientes
-        const pendientes = await prisma.commission.aggregate({
+        // Comisiones aprobadas (listas para pagar)
+        const aprobadas = await prisma.commission.aggregate({
           where: {
             affiliateId: afiliado.id,
-            status: "pending",
+            status: "APPROVED",
           },
           _sum: { amount: true },
           _count: true,
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
         const pagadas = await prisma.commission.aggregate({
           where: {
             affiliateId: afiliado.id,
-            status: "paid",
+            status: "PAID",
           },
           _sum: { amount: true },
         });
@@ -64,10 +64,10 @@ export async function GET(request: NextRequest) {
           ...afiliado,
           metricas: {
             totalComisiones: comisiones._sum.amount || 0,
-            comisionesPendientes: pendientes._sum.amount || 0,
+            comisionesAprobadas: aprobadas._sum.amount || 0,
             comisionesPagadas: pagadas._sum.amount || 0,
             numeroComisiones: comisiones._count || 0,
-            numeroPendientes: pendientes._count || 0,
+            numeroAprobadas: aprobadas._count || 0,
           },
         };
       })

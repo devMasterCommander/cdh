@@ -24,6 +24,23 @@ enum AffiliateRequestStatus {
   REJECTED    // Rechazado
 }
 
+enum CommissionStatus {
+  PENDING     // Generada automáticamente al comprar
+  IN_REVIEW   // En auditoría (no suma ni resta, se muestra subtotal)
+  APPROVED    // Aprobada, lista para pagar (suma)
+  DECLINED    // Declinada, no cumple condiciones (no suma)
+  PAID        // Pagada al afiliado
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER   // Transferencia bancaria
+  PAYPAL          // PayPal
+  STRIPE          // Stripe
+  CRYPTO          // Criptomonedas
+  CASH            // Efectivo
+  OTHER           // Otro método
+}
+
 // --- MODELOS DE AUTENTICACIÓN (NextAuth.js) ---
 model User {
   id            String    @id @default(cuid())
@@ -45,6 +62,7 @@ model User {
   
   commissionsReceived Commission[] @relation("CommissionsReceived")
   purchasesMade       Commission[] @relation("PurchasesMade")
+  paymentsReceived    Payment[]    @relation("PaymentsReceived")
   
   purchases      Purchase[]
   lessonProgress LessonProgress[] // Progreso del usuario en las lecciones
@@ -137,18 +155,35 @@ model Purchase {
 }
 
 model Commission {
-  id          String   @id @default(cuid())
+  id          String           @id @default(cuid())
   amount      Float
   level       Int
-  status      String   @default("pending")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      CommissionStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
   affiliateId String
-  affiliate   User     @relation("CommissionsReceived", fields: [affiliateId], references: [id])
+  affiliate   User             @relation("CommissionsReceived", fields: [affiliateId], references: [id])
   buyerId     String
-  buyer       User     @relation("PurchasesMade", fields: [buyerId], references: [id])
+  buyer       User             @relation("PurchasesMade", fields: [buyerId], references: [id])
   courseId    String
-  course      Course   @relation(fields: [courseId], references: [id])
+  course      Course           @relation(fields: [courseId], references: [id])
+  
+  paymentId   String?
+  payment     Payment?         @relation(fields: [paymentId], references: [id])
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  paymentDate     DateTime      @default(now())
+  method          PaymentMethod
+  notes           String?       // Notas adicionales (número de transferencia, etc.)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  affiliateId     String
+  affiliate       User          @relation("PaymentsReceived", fields: [affiliateId], references: [id])
+  
+  commissions     Commission[]
 }
 
 model Setting {

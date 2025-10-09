@@ -16,10 +16,10 @@ type Affiliate = {
   };
   metricas: {
     totalComisiones: number;
-    comisionesPendientes: number;
+    comisionesAprobadas: number;
     comisionesPagadas: number;
     numeroComisiones: number;
-    numeroPendientes: number;
+    numeroAprobadas: number;
   };
 };
 
@@ -50,8 +50,8 @@ export default function AfiliadosPage() {
     a.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalComisionesPendientes = afiliados.reduce(
-    (sum, a) => sum + a.metricas.comisionesPendientes,
+  const totalComisionesAprobadas = afiliados.reduce(
+    (sum, a) => sum + a.metricas.comisionesAprobadas,
     0
   );
 
@@ -94,14 +94,15 @@ export default function AfiliadosPage() {
           <p className="text-2xl font-bold text-gray-900">{totalReferidos}</p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Comisiones Pendientes</p>
-          <p className="text-2xl font-bold text-yellow-600">
-            {totalComisionesPendientes.toFixed(2)}€
+          <p className="text-sm text-gray-600 font-medium">Comisiones Aprobadas</p>
+          <p className="text-2xl font-bold text-green-600">
+            {totalComisionesAprobadas.toFixed(2)}€
           </p>
+          <p className="text-xs text-gray-500 mt-1">Listas para pagar</p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <p className="text-sm text-gray-600 font-medium">Comisiones Pagadas</p>
-          <p className="text-2xl font-bold text-green-600">
+          <p className="text-2xl font-bold text-purple-600">
             {totalComisionesPagadas.toFixed(2)}€
           </p>
         </div>
@@ -171,7 +172,7 @@ export default function AfiliadosPage() {
                   Comisiones Totales
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Pendientes
+                  Aprobadas
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Pagadas
@@ -214,14 +215,14 @@ export default function AfiliadosPage() {
                     {afiliado.metricas.totalComisiones.toFixed(2)}€
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-semibold text-yellow-600">
-                      {afiliado.metricas.comisionesPendientes.toFixed(2)}€
+                    <span className="text-sm font-semibold text-green-600">
+                      {afiliado.metricas.comisionesAprobadas.toFixed(2)}€
                     </span>
                     <div className="text-xs text-gray-500">
-                      ({afiliado.metricas.numeroPendientes})
+                      ({afiliado.metricas.numeroAprobadas})
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-purple-600">
                     {afiliado.metricas.comisionesPagadas.toFixed(2)}€
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-xs">
