@@ -142,3 +142,50 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
 }
 
+// PUT - Actualizar datos de usuario
+export async function PUT(request: NextRequest, { params }: Params) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const { name, email } = body;
+
+    // Si se está cambiando el email, verificar que no exista
+    if (email) {
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          email,
+          NOT: {
+            id,
+          },
+        },
+      });
+
+      if (existingUser) {
+        return NextResponse.json(
+          { error: "Ya existe un usuario con ese email" },
+          { status: 409 }
+        );
+      }
+    }
+
+    const usuario = await prisma.user.update({
+      where: { id },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(email && { email }),
+      },
+    });
+
+    return NextResponse.json({
+      message: "Usuario actualizado correctamente",
+      user: usuario,
+    });
+  } catch (error) {
+    console.error("Error al actualizar usuario:", error);
+    return NextResponse.json(
+      { error: "Error al actualizar usuario" },
+      { status: 500 }
+    );
+  }
+}
+

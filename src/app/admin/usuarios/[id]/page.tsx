@@ -90,6 +90,11 @@ export default function UsuarioDetailPage({ params }: Params) {
   // Estados para cambio de tipo de usuario
   const [changingType, setChangingType] = useState(false);
   const [selectedType, setSelectedType] = useState("");
+  
+  // Estados para edición de datos
+  const [editingData, setEditingData] = useState(false);
+  const [editForm, setEditForm] = useState({ name: "", email: "" });
+  const [savingData, setSavingData] = useState(false);
 
   useEffect(() => {
     params.then((resolvedParams) => {
@@ -105,6 +110,7 @@ export default function UsuarioDetailPage({ params }: Params) {
         const data = await response.json();
         setUsuario(data);
         setNewSlug(data.referralSlug || "");
+        setEditForm({ name: data.name || "", email: data.email || "" });
       } else {
         alert("Usuario no encontrado");
       }
@@ -112,6 +118,36 @@ export default function UsuarioDetailPage({ params }: Params) {
       console.error("Error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveUserData = async () => {
+    if (!editForm.email.trim()) {
+      alert("El email es requerido");
+      return;
+    }
+
+    setSavingData(true);
+    try {
+      const response = await fetch(`/api/admin/usuarios/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+
+      if (response.ok) {
+        alert("Datos actualizados exitosamente");
+        setEditingData(false);
+        fetchUsuario(userId);
+      } else {
+        const data = await response.json();
+        alert(data.error || "Error al actualizar datos");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al actualizar datos");
+    } finally {
+      setSavingData(false);
     }
   };
 
@@ -264,15 +300,77 @@ export default function UsuarioDetailPage({ params }: Params) {
             <p className="text-gray-600 mt-1">{usuario.email}</p>
             <p className="text-sm text-gray-500 mt-1">ID: {usuario.id}</p>
           </div>
-          {usuario.image && (
-            <img
-              src={usuario.image}
-              alt={usuario.name || "Usuario"}
-              className="w-16 h-16 rounded-full"
-            />
-          )}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setEditingData(true)}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+            >
+              ✏️ Editar Datos
+            </button>
+            {usuario.image && (
+              <img
+                src={usuario.image}
+                alt={usuario.name || "Usuario"}
+                className="w-16 h-16 rounded-full"
+              />
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Modal/Sección de Edición de Datos */}
+      {editingData && (
+        <div className="bg-white rounded-lg shadow mb-6 p-6 border-2 border-blue-500">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">✏️ Editar Datos del Usuario</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre Completo
+              </label>
+              <input
+                type="text"
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                placeholder="Juan Pérez García"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email *
+              </label>
+              <input
+                type="email"
+                required
+                value={editForm.email}
+                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                El email debe ser único en el sistema
+              </p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={handleSaveUserData}
+                disabled={savingData}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+              >
+                {savingData ? "Guardando..." : "Guardar Cambios"}
+              </button>
+              <button
+                onClick={() => {
+                  setEditingData(false);
+                  setEditForm({ name: usuario?.name || "", email: usuario?.email || "" });
+                }}
+                className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Cambiar Tipo de Usuario */}
       <div className="bg-white rounded-lg shadow mb-6 p-6">

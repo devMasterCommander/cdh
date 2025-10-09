@@ -73,11 +73,19 @@ export default function UsuariosPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Usuarios</h1>
-        <p className="text-gray-600 mt-1">
-          Gestiona todos los usuarios de la plataforma
-        </p>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Usuarios</h1>
+          <p className="text-gray-600 mt-1">
+            Gestiona todos los usuarios de la plataforma
+          </p>
+        </div>
+        <Link
+          href="/admin/usuarios/create"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          + Crear Usuario
+        </Link>
       </div>
 
       {/* Estadísticas */}
