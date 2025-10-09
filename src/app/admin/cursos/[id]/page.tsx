@@ -40,8 +40,13 @@ export default function CursoDetailPage({ params }: Params) {
   // Estados para formularios
   const [showModuleForm, setShowModuleForm] = useState(false);
   const [showLessonForm, setShowLessonForm] = useState<string | null>(null);
+  const [editingLesson, setEditingLesson] = useState<string | null>(null);
   const [moduleForm, setModuleForm] = useState({ name: "" });
   const [lessonForm, setLessonForm] = useState({ name: "", vimeoVideoId: "" });
+  const [editLessonForm, setEditLessonForm] = useState({ name: "", vimeoVideoId: "" });
+  
+  // Estados para drag & drop
+  const [draggedLesson, setDraggedLesson] = useState<string | null>(null);
 
   useEffect(() => {
     params.then((resolvedParams) => {
@@ -121,6 +126,40 @@ export default function CursoDetailPage({ params }: Params) {
     }
   };
 
+  const handleEditLesson = async (e: React.FormEvent, lessonId: string) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`/api/admin/lecciones/${lessonId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editLessonForm.name,
+          vimeoVideoId: editLessonForm.vimeoVideoId,
+        }),
+      });
+
+      if (response.ok) {
+        alert("Lección actualizada exitosamente");
+        setEditingLesson(null);
+        fetchCurso(id);
+      } else {
+        const data = await response.json();
+        alert(data.error || "Error al actualizar la lección");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al actualizar la lección");
+    }
+  };
+
+  const startEditLesson = (lesson: Lesson) => {
+    setEditingLesson(lesson.id);
+    setEditLessonForm({
+      name: lesson.name,
+      vimeoVideoId: lesson.vimeoVideoId,
+    });
+  };
+
   const handleDeleteModule = async (moduleId: string, moduleName: string) => {
     if (!confirm(`¿Estás seguro de eliminar el módulo "${moduleName}"?`)) {
       return;
@@ -165,6 +204,54 @@ export default function CursoDetailPage({ params }: Params) {
       console.error("Error:", error);
       alert("Error al eliminar la lección");
     }
+  };
+
+  // Drag & Drop handlers
+  const handleDragStart = (lessonId: string) => {
+    setDraggedLesson(lessonId);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = async (targetLessonId: string, moduleId: string) => {
+    if (!draggedLesson || draggedLesson === targetLessonId) {
+      setDraggedLesson(null);
+      return;
+    }
+
+    const module = curso?.modules.find(m => m.id === moduleId);
+    if (!module) return;
+
+    const lessons = [...module.lessons];
+    const draggedIndex = lessons.findIndex(l => l.id === draggedLesson);
+    const targetIndex = lessons.findIndex(l => l.id === targetLessonId);
+
+    if (draggedIndex === -1 || targetIndex === -1) return;
+
+    // Reordenar localmente
+    const [removed] = lessons.splice(draggedIndex, 1);
+    lessons.splice(targetIndex, 0, removed);
+
+    // Actualizar los órdenes en la base de datos
+    try {
+      const updatePromises = lessons.map((lesson, index) => 
+        fetch(`/api/admin/lecciones/${lesson.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ order: index + 1 }),
+        })
+      );
+
+      await Promise.all(updatePromises);
+      fetchCurso(id);
+    } catch (error) {
+      console.error("Error al reordenar:", error);
+      alert("Error al reordenar las lecciones");
+    }
+
+    setDraggedLesson(null);
   };
 
   if (loading) {
@@ -308,7 +395,7 @@ export default function CursoDetailPage({ params }: Params) {
                         {module.order}. {module.name}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        {module.lessons.length} lecciones
+                        {module.lessons.length} lecciones • Arrastra para reordenar
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -367,25 +454,80 @@ export default function CursoDetailPage({ params }: Params) {
                       {module.lessons.map((lesson) => (
                         <div
                           key={lesson.id}
-                          className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded"
+                          draggable={editingLesson !== lesson.id}
+                          onDragStart={() => handleDragStart(lesson.id)}
+                          onDragOver={handleDragOver}
+                          onDrop={() => handleDrop(lesson.id, module.id)}
+                          className={`py-2 px-3 bg-gray-50 rounded ${
+                            editingLesson !== lesson.id ? 'cursor-move hover:bg-gray-100' : ''
+                          } ${draggedLesson === lesson.id ? 'opacity-50' : ''}`}
                         >
-                          <div className="flex items-center gap-3 flex-1">
-                            <span className="text-sm text-gray-500 font-medium">
-                              {lesson.order}
-                            </span>
-                            <span className="text-sm text-gray-900">
-                              {lesson.name}
-                            </span>
-                            <span className="text-xs text-gray-400 bg-white px-2 py-1 rounded">
-                              🎥 {lesson.vimeoVideoId}
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => handleDeleteLesson(lesson.id, lesson.name)}
-                            className="text-sm text-red-600 hover:text-red-800"
-                          >
-                            Eliminar
-                          </button>
+                          {editingLesson === lesson.id ? (
+                            // Formulario de edición
+                            <form onSubmit={(e) => handleEditLesson(e, lesson.id)} className="space-y-2">
+                              <input
+                                type="text"
+                                required
+                                value={editLessonForm.name}
+                                onChange={(e) => setEditLessonForm({ ...editLessonForm, name: e.target.value })}
+                                className="w-full px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-sm"
+                                placeholder="Nombre de la lección"
+                              />
+                              <input
+                                type="text"
+                                required
+                                value={editLessonForm.vimeoVideoId}
+                                onChange={(e) => setEditLessonForm({ ...editLessonForm, vimeoVideoId: e.target.value })}
+                                className="w-full px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-sm"
+                                placeholder="ID de Vimeo"
+                              />
+                              <div className="flex gap-2">
+                                <button
+                                  type="submit"
+                                  className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                >
+                                  Guardar
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingLesson(null)}
+                                  className="text-sm bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400"
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            </form>
+                          ) : (
+                            // Vista normal
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3 flex-1">
+                                <span className="text-gray-400 text-lg cursor-move">⋮⋮</span>
+                                <span className="text-sm text-gray-500 font-medium">
+                                  {lesson.order}
+                                </span>
+                                <span className="text-sm text-gray-900">
+                                  {lesson.name}
+                                </span>
+                                <span className="text-xs text-gray-400 bg-white px-2 py-1 rounded">
+                                  🎥 {lesson.vimeoVideoId}
+                                </span>
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => startEditLesson(lesson)}
+                                  className="text-sm text-blue-600 hover:text-blue-800"
+                                >
+                                  Editar
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteLesson(lesson.id, lesson.name)}
+                                  className="text-sm text-red-600 hover:text-red-800"
+                                >
+                                  Eliminar
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
