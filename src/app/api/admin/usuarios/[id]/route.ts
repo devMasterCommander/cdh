@@ -9,18 +9,12 @@ type Params = {
 export async function GET(request: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
+    
+    console.log(`[API] Buscando usuario con ID: ${id}`);
 
     const usuario = await prisma.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        image: true,
-        referralSlug: true,
-        createdAt: true,
-        updatedAt: true,
-        sponsorId: true,
+      include: {
         // Sponsor (afiliado que lo refirió)
         sponsor: {
           select: {
@@ -40,17 +34,8 @@ export async function GET(request: NextRequest, { params }: Params) {
         },
         // Compras realizadas
         purchases: {
-          select: {
-            id: true,
-            createdAt: true,
-            stripePaymentIntentId: true,
-            course: {
-              select: {
-                id: true,
-                name: true,
-                price: true,
-              },
-            },
+          include: {
+            course: true,
           },
           orderBy: {
             createdAt: "desc",
@@ -58,22 +43,12 @@ export async function GET(request: NextRequest, { params }: Params) {
         },
         // Progreso en lecciones
         lessonProgress: {
-          select: {
-            id: true,
-            isCompleted: true,
-            lastTimestamp: true,
-            updatedAt: true,
+          include: {
             lesson: {
-              select: {
-                id: true,
-                name: true,
+              include: {
                 module: {
-                  select: {
-                    course: {
-                      select: {
-                        name: true,
-                      },
-                    },
+                  include: {
+                    course: true,
                   },
                 },
               },
@@ -85,12 +60,7 @@ export async function GET(request: NextRequest, { params }: Params) {
         },
         // Comisiones recibidas (como afiliado)
         commissionsReceived: {
-          select: {
-            id: true,
-            amount: true,
-            level: true,
-            status: true,
-            createdAt: true,
+          include: {
             buyer: {
               select: {
                 name: true,
@@ -119,17 +89,20 @@ export async function GET(request: NextRequest, { params }: Params) {
     });
 
     if (!usuario) {
+      console.error(`[API] Usuario con ID ${id} no encontrado`);
       return NextResponse.json(
         { error: "Usuario no encontrado" },
         { status: 404 }
       );
     }
 
+    console.log(`[API] Usuario encontrado: ${usuario.email}`);
     return NextResponse.json(usuario);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error al obtener usuario:", error);
+    console.error("Stack:", error.stack);
     return NextResponse.json(
-      { error: "Error al obtener usuario" },
+      { error: `Error al obtener usuario: ${error.message}` },
       { status: 500 }
     );
   }
