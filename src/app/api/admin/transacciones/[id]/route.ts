@@ -20,6 +20,14 @@ export async function GET(request: NextRequest, { params }: Params) {
             email: true,
             userType: true,
             image: true,
+            sponsorId: true,
+            sponsor: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
           },
         },
         course: {

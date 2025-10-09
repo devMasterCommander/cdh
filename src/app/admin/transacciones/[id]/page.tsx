@@ -20,12 +20,19 @@ type Transaction = {
   id: string;
   createdAt: string;
   stripePaymentIntentId: string;
+  userId: string;
   user: {
     id: string;
     name: string | null;
     email: string | null;
     userType: string;
     image: string | null;
+    sponsorId: string | null;
+    sponsor: {
+      id: string;
+      name: string | null;
+      email: string | null;
+    } | null;
   };
   course: {
     id: string;
@@ -43,6 +50,12 @@ export default function TransaccionDetailPage({ params }: Params) {
   const [transactionId, setTransactionId] = useState<string>("");
   const [transaccion, setTransaccion] = useState<Transaction | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Estados para asignar patrocinador
+  const [assigningSponsor, setAssigningSponsor] = useState(false);
+  const [sponsorEmail, setSponsorEmail] = useState("");
+  const [searchingSponsor, setSearchingSponsor] = useState(false);
+  const [sponsorFound, setSponsorFound] = useState<any>(null);
 
   useEffect(() => {
     params.then((resolvedParams) => {
@@ -64,6 +77,85 @@ export default function TransaccionDetailPage({ params }: Params) {
       console.error("Error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSearchSponsor = async () => {
+    if (!sponsorEmail.trim()) {
+      alert("Ingresa un email para buscar");
+      return;
+    }
+
+    setSearchingSponsor(true);
+    try {
+      const response = await fetch("/api/admin/usuarios");
+      if (response.ok) {
+        const usuarios = await response.json();
+        const found = usuarios.find(
+          (u: any) => u.email?.toLowerCase() === sponsorEmail.toLowerCase()
+        );
+
+        if (found) {
+          if (found.id === transaccion?.user.id) {
+            alert("Un usuario no puede ser su propio patrocinador");
+            setSponsorFound(null);
+          } else {
+            setSponsorFound(found);
+          }
+        } else {
+          alert("No se encontró un usuario con ese email");
+          setSponsorFound(null);
+        }
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al buscar usuario");
+    } finally {
+      setSearchingSponsor(false);
+    }
+  };
+
+  const handleAssignSponsor = async () => {
+    if (!sponsorFound) {
+      alert("Primero busca un patrocinador");
+      return;
+    }
+
+    const recalculate = confirm(
+      "¿Deseas recalcular las comisiones?\n\n" +
+      "SÍ = Eliminará comisiones anteriores y creará nuevas para este patrocinador\n" +
+      "NO = Solo cambiará el patrocinador sin tocar comisiones existentes"
+    );
+
+    setAssigningSponsor(true);
+    try {
+      const response = await fetch(
+        `/api/admin/usuarios/${transaccion?.user.id}/assign-sponsor`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sponsorId: sponsorFound.id,
+            recalculateCommissions: recalculate,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message);
+        setSponsorEmail("");
+        setSponsorFound(null);
+        fetchTransaccion(transactionId);
+      } else {
+        const data = await response.json();
+        alert(data.error || "Error al asignar patrocinador");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al asignar patrocinador");
+    } finally {
+      setAssigningSponsor(false);
     }
   };
 
@@ -169,6 +261,21 @@ export default function TransaccionDetailPage({ params }: Params) {
               </div>
               <span className="text-blue-600">→</span>
             </Link>
+            
+            {/* Patrocinador actual */}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-xs text-gray-600 mb-2 font-medium">Patrocinador Actual:</p>
+              {transaccion.user.sponsor ? (
+                <Link
+                  href={`/admin/usuarios/${transaccion.user.sponsor.id}`}
+                  className="block p-2 bg-green-50 rounded text-sm text-green-800 hover:bg-green-100"
+                >
+                  ✓ {transaccion.user.sponsor.name || transaccion.user.sponsor.email}
+                </Link>
+              ) : (
+                <p className="text-sm text-gray-400">Sin patrocinador</p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -228,6 +335,84 @@ export default function TransaccionDetailPage({ params }: Params) {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Asignar Patrocinador Manualmente */}
+      <div className="bg-white rounded-lg shadow mb-6">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-lg font-bold text-gray-900">🤝 Asignar Patrocinador</h2>
+          {transaccion.user.sponsor && (
+            <span className="text-xs text-green-600">✓ Ya tiene patrocinador</span>
+          )}
+        </div>
+        <div className="p-6">
+          <p className="text-sm text-gray-600 mb-4">
+            {transaccion.user.sponsor 
+              ? "Este usuario ya tiene un patrocinador asignado. Puedes cambiarlo si es necesario."
+              : "⚠️ Esta venta no tiene patrocinador asignado. Asigna uno manualmente para generar comisiones."}
+          </p>
+          
+          <div className="space-y-4">
+            {/* Buscar patrocinador */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Buscar Patrocinador por Email
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  placeholder="email@ejemplo.com"
+                  value={sponsorEmail}
+                  onChange={(e) => setSponsorEmail(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearchSponsor()}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+                <button
+                  onClick={handleSearchSponsor}
+                  disabled={searchingSponsor}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+                >
+                  {searchingSponsor ? "Buscando..." : "Buscar"}
+                </button>
+              </div>
+            </div>
+
+            {/* Resultado de búsqueda */}
+            {sponsorFound && (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-800 font-medium mb-2">
+                  ✓ Usuario encontrado:
+                </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {sponsorFound.name || "Sin nombre"}
+                    </p>
+                    <p className="text-sm text-gray-600">{sponsorFound.email}</p>
+                    <span className="inline-block mt-1 px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                      {sponsorFound.userType}
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleAssignSponsor}
+                    disabled={assigningSponsor}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400"
+                  >
+                    {assigningSponsor ? "Asignando..." : "Asignar Como Patrocinador"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Información */}
+            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-xs text-yellow-800">
+                <strong>💡 Nota:</strong> Al asignar un patrocinador, se te preguntará si deseas recalcular las comisiones. 
+                Si eliges "SÍ", se eliminarán las comisiones anteriores y se crearán nuevas para el nuevo patrocinador.
               </p>
             </div>
           </div>
