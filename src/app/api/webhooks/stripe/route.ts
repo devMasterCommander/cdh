@@ -33,6 +33,33 @@ export async function POST(request: NextRequest) {
       const paymentIntentId = session.payment_intent as string;
       const customerEmail = session.customer_email || session.customer_details?.email;
 
+      // Leer cookie de referido (si existe)
+      const referralCookie = request.cookies.get('cdh-referral');
+      const referralValue = referralCookie?.value;
+      let sponsorId: string | null = null;
+
+      // Si hay cookie de referido, buscar el sponsor
+      if (referralValue) {
+        console.log(`4.0 Cookie de referido detectada: ${referralValue}`);
+        
+        // Buscar sponsor por referralSlug o por ID
+        const sponsor = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { referralSlug: referralValue },
+              { id: referralValue },
+            ],
+          },
+        });
+
+        if (sponsor) {
+          sponsorId = sponsor.id;
+          console.log(`✅ Sponsor encontrado: ${sponsor.name || sponsor.email} (ID: ${sponsorId})`);
+        } else {
+          console.log(`⚠️ No se encontró sponsor con slug/ID: ${referralValue}`);
+        }
+      }
+
       // Si NO hay userId (guest checkout), crear o encontrar usuario por email
       if (!userId && customerEmail) {
         console.log(`4.1 Guest checkout detectado. Email: ${customerEmail}`);
@@ -49,11 +76,24 @@ export async function POST(request: NextRequest) {
             data: {
               email: customerEmail,
               name: session.customer_details?.name || null,
+              sponsorId: sponsorId, // ← Asignar patrocinador si existe
             },
           });
           console.log(`✅ Usuario creado con ID: ${user.id}`);
+          if (sponsorId) {
+            console.log(`✅ Usuario vinculado al sponsor: ${sponsorId}`);
+          }
         } else {
           console.log(`✅ Usuario existente encontrado con ID: ${user.id}`);
+          
+          // Si el usuario existe pero NO tiene sponsor, asignarlo ahora
+          if (!user.sponsorId && sponsorId) {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { sponsorId: sponsorId },
+            });
+            console.log(`✅ Sponsor asignado a usuario existente: ${sponsorId}`);
+          }
         }
 
         userId = user.id;

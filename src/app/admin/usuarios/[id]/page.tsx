@@ -56,6 +56,7 @@ type User = {
   name: string | null;
   email: string | null;
   image: string | null;
+  referralSlug: string | null;
   createdAt: string;
   sponsor: Sponsor | null;
   sponsored: Array<{ id: string; name: string | null; email: string | null; createdAt: string }>;
@@ -78,6 +79,11 @@ export default function UsuarioDetailPage({ params }: Params) {
   const [userId, setUserId] = useState<string>("");
   const [usuario, setUsuario] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Estados para URL de referido
+  const [editingSlug, setEditingSlug] = useState(false);
+  const [newSlug, setNewSlug] = useState("");
+  const [savingSlug, setSavingSlug] = useState(false);
 
   useEffect(() => {
     params.then((resolvedParams) => {
@@ -92,6 +98,7 @@ export default function UsuarioDetailPage({ params }: Params) {
       if (response.ok) {
         const data = await response.json();
         setUsuario(data);
+        setNewSlug(data.referralSlug || "");
       } else {
         alert("Usuario no encontrado");
       }
@@ -100,6 +107,47 @@ export default function UsuarioDetailPage({ params }: Params) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSaveSlug = async () => {
+    if (!newSlug.trim()) {
+      alert("El slug no puede estar vacío");
+      return;
+    }
+
+    setSavingSlug(true);
+    try {
+      const response = await fetch(`/api/admin/usuarios/${userId}/referral-slug`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ referralSlug: newSlug }),
+      });
+
+      if (response.ok) {
+        alert("Slug actualizado exitosamente");
+        setEditingSlug(false);
+        fetchUsuario(userId);
+      } else {
+        const data = await response.json();
+        alert(data.error || "Error al actualizar el slug");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al actualizar el slug");
+    } finally {
+      setSavingSlug(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert("URL copiada al portapapeles");
+  };
+
+  const getReferralUrl = () => {
+    const baseUrl = window.location.origin;
+    const identifier = usuario?.referralSlug || userId;
+    return `${baseUrl}/ref/${identifier}`;
   };
 
   if (loading) {
@@ -187,6 +235,102 @@ export default function UsuarioDetailPage({ params }: Params) {
           <p className="text-2xl font-bold text-gray-900 mt-2">
             {totalComisiones.toFixed(2)}€
           </p>
+        </div>
+      </div>
+
+      {/* URL de Referido */}
+      <div className="bg-white rounded-lg shadow mb-6">
+        <div className="p-4 border-b border-gray-200">
+          <h2 className="text-lg font-bold text-gray-900">🔗 URL de Referido</h2>
+        </div>
+        <div className="p-6">
+          {/* URL Actual */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              URL Actual de Referido
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                readOnly
+                value={getReferralUrl()}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900"
+              />
+              <button
+                onClick={() => copyToClipboard(getReferralUrl())}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap"
+              >
+                📋 Copiar
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              {usuario.referralSlug 
+                ? `Usando slug personalizado: "${usuario.referralSlug}"` 
+                : `Usando ID por defecto. Personaliza el slug para una URL más amigable.`
+              }
+            </p>
+          </div>
+
+          {/* Editar Slug */}
+          {!editingSlug ? (
+            <button
+              onClick={() => setEditingSlug(true)}
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              ✏️ Personalizar Slug
+            </button>
+          ) : (
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-semibold text-gray-900 mb-3 text-sm">
+                Personalizar Slug de Referido
+              </h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">
+                    Nuevo Slug (solo letras minúsculas, números y guiones)
+                  </label>
+                  <input
+                    type="text"
+                    value={newSlug}
+                    onChange={(e) => setNewSlug(e.target.value.toLowerCase())}
+                    placeholder="ej: juan-perez"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Vista previa: <code className="bg-gray-100 px-1 rounded">
+                      {window.location.origin}/ref/{newSlug || "tu-slug"}
+                    </code>
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleSaveSlug}
+                    disabled={savingSlug || !newSlug.trim()}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 text-sm"
+                  >
+                    {savingSlug ? "Guardando..." : "Guardar Slug"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingSlug(false);
+                      setNewSlug(usuario?.referralSlug || "");
+                    }}
+                    className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Información */}
+          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-xs text-yellow-800">
+              <strong>💡 Tip:</strong> El slug personalizado hace que la URL sea más fácil de recordar y compartir. 
+              Será único en todo el sistema.
+            </p>
+          </div>
         </div>
       </div>
 
