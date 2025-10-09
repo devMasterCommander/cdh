@@ -56,6 +56,8 @@ type User = {
   name: string | null;
   email: string | null;
   image: string | null;
+  userType: string;
+  affiliateRequestStatus: string;
   referralSlug: string | null;
   createdAt: string;
   sponsor: Sponsor | null;
@@ -84,6 +86,10 @@ export default function UsuarioDetailPage({ params }: Params) {
   const [editingSlug, setEditingSlug] = useState(false);
   const [newSlug, setNewSlug] = useState("");
   const [savingSlug, setSavingSlug] = useState(false);
+  
+  // Estados para cambio de tipo de usuario
+  const [changingType, setChangingType] = useState(false);
+  const [selectedType, setSelectedType] = useState("");
 
   useEffect(() => {
     params.then((resolvedParams) => {
@@ -150,6 +156,59 @@ export default function UsuarioDetailPage({ params }: Params) {
     return `${baseUrl}/ref/${identifier}`;
   };
 
+  const handleChangeUserType = async () => {
+    if (!selectedType) {
+      alert("Selecciona un tipo de usuario");
+      return;
+    }
+
+    if (!confirm(`¿Estás seguro de cambiar el tipo de usuario a ${selectedType}?`)) {
+      return;
+    }
+
+    setChangingType(true);
+    try {
+      const response = await fetch(`/api/admin/usuarios/${userId}/change-type`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userType: selectedType }),
+      });
+
+      if (response.ok) {
+        alert("Tipo de usuario actualizado exitosamente");
+        fetchUsuario(userId);
+      } else {
+        const data = await response.json();
+        alert(data.error || "Error al cambiar tipo de usuario");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al cambiar tipo de usuario");
+    } finally {
+      setChangingType(false);
+    }
+  };
+
+  const getUserTypeLabel = (type: string) => {
+    const types: { [key: string]: string } = {
+      GUEST: "Invitado",
+      CUSTOMER: "Cliente",
+      AFFILIATE: "Afiliado",
+      ADMIN: "Administrador",
+    };
+    return types[type] || type;
+  };
+
+  const getUserTypeBadge = (type: string) => {
+    const badges: { [key: string]: string } = {
+      GUEST: "bg-gray-100 text-gray-800",
+      CUSTOMER: "bg-green-100 text-green-800",
+      AFFILIATE: "bg-purple-100 text-purple-800",
+      ADMIN: "bg-red-100 text-red-800",
+    };
+    return badges[type] || "bg-gray-100 text-gray-800";
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -193,10 +252,15 @@ export default function UsuarioDetailPage({ params }: Params) {
           ← Volver a Usuarios
         </Link>
         <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              {usuario.name || "Sin nombre"}
-            </h1>
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-gray-900">
+                {usuario.name || "Sin nombre"}
+              </h1>
+              <span className={`px-3 py-1 text-sm font-semibold rounded-full ${getUserTypeBadge(usuario.userType)}`}>
+                {getUserTypeLabel(usuario.userType)}
+              </span>
+            </div>
             <p className="text-gray-600 mt-1">{usuario.email}</p>
             <p className="text-sm text-gray-500 mt-1">ID: {usuario.id}</p>
           </div>
@@ -207,6 +271,53 @@ export default function UsuarioDetailPage({ params }: Params) {
               className="w-16 h-16 rounded-full"
             />
           )}
+        </div>
+      </div>
+
+      {/* Cambiar Tipo de Usuario */}
+      <div className="bg-white rounded-lg shadow mb-6 p-6">
+        <h2 className="text-lg font-bold text-gray-900 mb-4">👤 Tipo de Usuario</h2>
+        <div className="flex items-center gap-4">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tipo Actual
+            </label>
+            <div className={`inline-flex px-4 py-2 rounded-lg font-semibold ${getUserTypeBadge(usuario.userType)}`}>
+              {getUserTypeLabel(usuario.userType)}
+            </div>
+            {usuario.affiliateRequestStatus === 'PENDING' && (
+              <div className="mt-2">
+                <span className="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                  ⚠️ Solicitud de afiliado pendiente
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Cambiar a
+            </label>
+            <div className="flex gap-2">
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              >
+                <option value="">Seleccionar...</option>
+                <option value="GUEST">Invitado</option>
+                <option value="CUSTOMER">Cliente</option>
+                <option value="AFFILIATE">Afiliado</option>
+                <option value="ADMIN">Administrador</option>
+              </select>
+              <button
+                onClick={handleChangeUserType}
+                disabled={changingType || !selectedType}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+              >
+                {changingType ? "Cambiando..." : "Cambiar"}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -238,16 +349,17 @@ export default function UsuarioDetailPage({ params }: Params) {
         </div>
       </div>
 
-      {/* URL de Referido */}
-      <div className="bg-white rounded-lg shadow mb-6">
-        <div className="p-4 border-b border-gray-200">
-          <h2 className="text-lg font-bold text-gray-900">🔗 URL de Referido</h2>
-        </div>
+      {/* URL para Recomendación (Solo para Afiliados) */}
+      {usuario.userType === 'AFFILIATE' && (
+        <div className="bg-white rounded-lg shadow mb-6">
+          <div className="p-4 border-b border-gray-200">
+            <h2 className="text-lg font-bold text-gray-900">🔗 URL para Recomendación</h2>
+          </div>
         <div className="p-6">
           {/* URL Actual */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL Actual de Referido
+              URL para Compartir
             </label>
             <div className="flex gap-2">
               <input
@@ -333,6 +445,7 @@ export default function UsuarioDetailPage({ params }: Params) {
           </div>
         </div>
       </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Patrocinador */}

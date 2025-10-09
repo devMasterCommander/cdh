@@ -14,7 +14,17 @@ export async function GET(request: NextRequest, { params }: Params) {
 
     const usuario = await prisma.user.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        userType: true,
+        affiliateRequestStatus: true,
+        referralSlug: true,
+        createdAt: true,
+        updatedAt: true,
+        sponsorId: true,
         // Sponsor (afiliado que lo refirió)
         sponsor: {
           select: {
@@ -34,8 +44,17 @@ export async function GET(request: NextRequest, { params }: Params) {
         },
         // Compras realizadas
         purchases: {
-          include: {
-            course: true,
+          select: {
+            id: true,
+            createdAt: true,
+            stripePaymentIntentId: true,
+            course: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+              },
+            },
           },
           orderBy: {
             createdAt: "desc",
@@ -43,12 +62,22 @@ export async function GET(request: NextRequest, { params }: Params) {
         },
         // Progreso en lecciones
         lessonProgress: {
-          include: {
+          select: {
+            id: true,
+            isCompleted: true,
+            lastTimestamp: true,
+            updatedAt: true,
             lesson: {
-              include: {
+              select: {
+                id: true,
+                name: true,
                 module: {
-                  include: {
-                    course: true,
+                  select: {
+                    course: {
+                      select: {
+                        name: true,
+                      },
+                    },
                   },
                 },
               },
@@ -60,7 +89,12 @@ export async function GET(request: NextRequest, { params }: Params) {
         },
         // Comisiones recibidas (como afiliado)
         commissionsReceived: {
-          include: {
+          select: {
+            id: true,
+            amount: true,
+            level: true,
+            status: true,
+            createdAt: true,
             buyer: {
               select: {
                 name: true,

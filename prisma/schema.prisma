@@ -9,6 +9,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// --- ENUMS ---
+enum UserType {
+  GUEST       // Usuario registrado sin compras
+  CUSTOMER    // Usuario con compras
+  AFFILIATE   // Afiliado (puede referir y ganar comisiones)
+  ADMIN       // Administrador del sistema
+}
+
+enum AffiliateRequestStatus {
+  NONE        // No ha solicitado
+  PENDING     // Solicitud pendiente de aprobación
+  APPROVED    // Aprobado (ya es AFFILIATE)
+  REJECTED    // Rechazado
+}
+
 // --- MODELOS DE AUTENTICACIÓN (NextAuth.js) ---
 model User {
   id            String    @id @default(cuid())
@@ -16,6 +31,8 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  userType      UserType  @default(GUEST) // Tipo de usuario
+  affiliateRequestStatus AffiliateRequestStatus @default(NONE) // Estado de solicitud de afiliado
   referralSlug  String?   @unique // Slug personalizado para URL de referido
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

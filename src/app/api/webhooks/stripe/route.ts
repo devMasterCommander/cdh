@@ -110,6 +110,20 @@ export async function POST(request: NextRequest) {
           },
         });
         console.log(`✅ Compra registrada para el usuario ${userId} del curso ${courseId}`);
+        
+        // Actualizar tipo de usuario a CUSTOMER si era GUEST
+        const currentUser = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { userType: true },
+        });
+        
+        if (currentUser?.userType === 'GUEST') {
+          await prisma.user.update({
+            where: { id: userId },
+            data: { userType: 'CUSTOMER' },
+          });
+          console.log(`✅ Usuario actualizado de GUEST a CUSTOMER`);
+        }
         /* fin lógica de registro de compra */
 
         console.log(`5. Llamando a calculateAndRecordCommissions...`);
