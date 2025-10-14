@@ -2,6 +2,31 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Award,
+  Users,
+  Euro,
+  CheckCircle,
+  List,
+  Network,
+  Search,
+  Eye,
+  TrendingUp,
+  Link2
+} from "lucide-react";
 
 type Affiliate = {
   id: string;
@@ -67,213 +92,277 @@ export default function AfiliadosPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Cargando afiliados...</div>
+      <div className="space-y-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center space-y-4">
+            <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+            <Skeleton className="h-4 w-48 mx-auto" />
+            <Skeleton className="h-3 w-32 mx-auto" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="space-y-6 fade-in">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Sistema de Afiliados</h1>
-        <p className="text-gray-600 mt-1">
-          Gestiona afiliados, comisiones y pagos
-        </p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-3xl font-cinzel flex items-center space-x-2">
+            <Award className="h-7 w-7 text-primary" />
+            <span>Sistema de Afiliados</span>
+          </CardTitle>
+          <CardDescription>
+            Gestiona afiliados, comisiones y pagos
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
       {/* Estadísticas Generales */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Afiliados Activos</p>
-          <p className="text-2xl font-bold text-gray-900">{afiliados.length}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Total Referidos</p>
-          <p className="text-2xl font-bold text-gray-900">{totalReferidos}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Comisiones Aprobadas</p>
-          <p className="text-2xl font-bold text-green-600">
-            {totalComisionesAprobadas.toFixed(2)}€
-          </p>
-          <p className="text-xs text-gray-500 mt-1">Listas para pagar</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Comisiones Pagadas</p>
-          <p className="text-2xl font-bold text-purple-600">
-            {totalComisionesPagadas.toFixed(2)}€
-          </p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Afiliados Activos
+            </CardTitle>
+            <Award className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{afiliados.length}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Referidos
+            </CardTitle>
+            <Users className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{totalReferidos}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Comisiones Aprobadas
+            </CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {totalComisionesAprobadas.toFixed(2)}€
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Listas para pagar</p>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow overflow-hidden">
+          <div className="bg-gradient-to-br from-primary to-primary/80 p-6 text-primary-foreground">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm opacity-90 font-medium">Comisiones Pagadas</p>
+                <p className="text-2xl font-bold mt-2">
+                  {totalComisionesPagadas.toFixed(2)}€
+                </p>
+              </div>
+              <Euro className="h-8 w-8 opacity-80" />
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Accesos rápidos */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <div className="flex gap-4 items-center justify-between">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setViewMode("list")}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                viewMode === "list"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              📊 Lista
-            </button>
-            <button
-              onClick={() => setViewMode("tree")}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                viewMode === "tree"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-            >
-              🌳 Árbol
-            </button>
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="flex gap-2">
+              <Button
+                variant={viewMode === "list" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className={viewMode === "list" ? "bg-primary hover:bg-primary/90" : ""}
+              >
+                <List className="h-4 w-4 mr-2" />
+                Lista
+              </Button>
+              <Button
+                variant={viewMode === "tree" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("tree")}
+                className={viewMode === "tree" ? "bg-primary hover:bg-primary/90" : ""}
+              >
+                <Network className="h-4 w-4 mr-2" />
+                Árbol
+              </Button>
+            </div>
+            <Button asChild className="bg-green-600 hover:bg-green-700">
+              <Link href="/admin/afiliados/comisiones" className="flex items-center space-x-2">
+                <Euro className="h-4 w-4" />
+                <span>Gestionar Pagos</span>
+              </Link>
+            </Button>
           </div>
-          <Link
-            href="/admin/afiliados/comisiones"
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-          >
-            💰 Gestionar Pagos
-          </Link>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Buscador */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <input
-          type="text"
-          placeholder="Buscar afiliado por nombre o email..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-        />
-      </div>
+      <Card>
+        <CardContent className="p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Buscar afiliado por nombre o email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Vista de Lista */}
       {viewMode === "list" && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Ranking
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Afiliado
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Referidos
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Comisiones Totales
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Aprobadas
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Pagadas
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  URL
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredAfiliados.map((afiliado, index) => (
-                <tr key={afiliado.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {index < 3 ? (
-                      <span className="text-2xl">
-                        {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
-                      </span>
-                    ) : (
-                      <span className="text-sm text-gray-500">#{index + 1}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <Link
-                      href={`/admin/usuarios/${afiliado.id}`}
-                      className="text-sm font-medium text-blue-600 hover:text-blue-800"
-                    >
-                      {afiliado.name || "Sin nombre"}
-                    </Link>
-                    <div className="text-sm text-gray-500">{afiliado.email}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                      {afiliado._count.sponsored}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                    {afiliado.metricas.totalComisiones.toFixed(2)}€
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-semibold text-green-600">
-                      {afiliado.metricas.comisionesAprobadas.toFixed(2)}€
-                    </span>
-                    <div className="text-xs text-gray-500">
-                      ({afiliado.metricas.numeroAprobadas})
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-purple-600">
-                    {afiliado.metricas.comisionesPagadas.toFixed(2)}€
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-xs">
-                    {afiliado.referralSlug ? (
-                      <code className="bg-blue-50 text-blue-800 px-2 py-1 rounded">
-                        /ref/{afiliado.referralSlug}
-                      </code>
-                    ) : (
-                      <span className="text-gray-400">Sin slug</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                    <Link
-                      href={`/admin/usuarios/${afiliado.id}`}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      Ver Perfil
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {filteredAfiliados.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              {searchTerm
-                ? "No se encontraron afiliados con ese criterio"
-                : "No hay afiliados registrados todavía"}
-            </div>
-          )}
-        </div>
+        <Card>
+          <CardContent className="p-0">
+            {filteredAfiliados.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="space-y-4">
+                  <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+                    <Award className="h-10 w-10 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground mb-2">
+                      {searchTerm ? "No se encontraron afiliados" : "No hay afiliados registrados"}
+                    </h2>
+                    <p className="text-muted-foreground">
+                      {searchTerm
+                        ? "Intenta con otro término de búsqueda"
+                        : "Los afiliados aparecerán aquí cuando se aprueben"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Ranking</TableHead>
+                      <TableHead>Afiliado</TableHead>
+                      <TableHead>Referidos</TableHead>
+                      <TableHead>Comisiones Totales</TableHead>
+                      <TableHead>Aprobadas</TableHead>
+                      <TableHead>Pagadas</TableHead>
+                      <TableHead>URL</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredAfiliados.map((afiliado, index) => (
+                      <TableRow key={afiliado.id} className="hover:bg-muted/50">
+                        <TableCell>
+                          {index < 3 ? (
+                            <span className="text-2xl">
+                              {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+                            </span>
+                          ) : (
+                            <Badge variant="secondary">#{index + 1}</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Link
+                            href={`/admin/usuarios/${afiliado.id}`}
+                            className="text-sm font-medium text-primary hover:text-primary/80"
+                          >
+                            {afiliado.name || "Sin nombre"}
+                          </Link>
+                          <div className="text-xs text-muted-foreground">{afiliado.email}</div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className="flex items-center space-x-1 w-fit">
+                            <Users className="h-3 w-3" />
+                            <span>{afiliado._count.sponsored}</span>
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-1">
+                            <Euro className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-bold text-foreground">
+                              {afiliado.metricas.totalComisiones.toFixed(2)}€
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm font-semibold text-green-600">
+                            {afiliado.metricas.comisionesAprobadas.toFixed(2)}€
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            ({afiliado.metricas.numeroAprobadas})
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm font-semibold text-primary">
+                            {afiliado.metricas.comisionesPagadas.toFixed(2)}€
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {afiliado.referralSlug ? (
+                            <Badge variant="outline" className="flex items-center space-x-1 w-fit">
+                              <Link2 className="h-3 w-3" />
+                              <code className="text-xs">/ref/{afiliado.referralSlug}</code>
+                            </Badge>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">Sin slug</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/admin/usuarios/${afiliado.id}`}>
+                              <Eye className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       )}
 
       {/* Vista de Árbol (Próximamente) */}
       {viewMode === "tree" && (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <span className="text-6xl mb-4 block">🌳</span>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
-            Vista de Árbol Multinivel
-          </h3>
-          <p className="text-gray-600 mb-4">
-            Visualización del árbol de afiliados próximamente
-          </p>
-          <button
-            onClick={() => setViewMode("list")}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            Volver a Lista
-          </button>
-        </div>
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="space-y-4">
+              <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+                <Network className="h-10 w-10 text-muted-foreground" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-cinzel font-bold text-foreground mb-2">
+                  Vista de Árbol Multinivel
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Visualización del árbol de afiliados próximamente
+                </p>
+                <Button
+                  onClick={() => setViewMode("list")}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <List className="h-4 w-4 mr-2" />
+                  Volver a Lista
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

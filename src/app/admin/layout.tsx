@@ -5,12 +5,36 @@ import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import routerProvider from "@refinedev/nextjs-router";
 import dataProvider from "@refinedev/simple-rest";
 import React from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  LayoutDashboard,
+  BookOpen,
+  Users,
+  CreditCard,
+  Award,
+  Home,
+  Settings,
+  Shield
+} from "lucide-react";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/admin/cursos", icon: BookOpen, label: "Cursos" },
+    { href: "/admin/usuarios", icon: Users, label: "Usuarios" },
+    { href: "/admin/transacciones", icon: CreditCard, label: "Transacciones" },
+    { href: "/admin/afiliados", icon: Award, label: "Afiliados" },
+  ];
+
   return (
     <RefineKbarProvider>
       <Refine
@@ -57,60 +81,58 @@ export default function AdminLayout({
           warnWhenUnsavedChanges: true,
         }}
       >
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-background">
           {/* Sidebar */}
-          <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200">
-            <div className="p-6">
-              <h1 className="text-2xl font-bold text-gray-800">CDH Admin</h1>
-              <p className="text-sm text-gray-500">Panel de Administración</p>
+          <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border shadow-sm">
+            {/* Header */}
+            <div className="bg-gradient-to-br from-primary to-primary/80 p-6 text-primary-foreground">
+              <div className="flex items-center space-x-2 mb-2">
+                <Shield className="h-6 w-6" />
+                <h1 className="text-2xl font-cinzel font-bold">CDH Admin</h1>
+              </div>
+              <p className="text-sm opacity-90">Panel de Administración</p>
             </div>
             
-            <nav className="mt-6">
-              <a 
-                href="/admin"
-                className="block px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
+            {/* Navigation */}
+            <nav className="p-4 space-y-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href || 
+                  (item.href !== "/admin" && pathname.startsWith(item.href));
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                );
+              })}
+
+              <Separator className="my-4" />
+
+              <Link
+                href="/"
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               >
-                📊 Dashboard
-              </a>
-              <a 
-                href="/admin/cursos"
-                className="block px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
-              >
-                📚 Cursos
-              </a>
-              <a 
-                href="/admin/usuarios"
-                className="block px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
-              >
-                👥 Usuarios
-              </a>
-              <a 
-                href="/admin/transacciones"
-                className="block px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
-              >
-                💳 Transacciones
-              </a>
-              <a 
-                href="/admin/afiliados"
-                className="block px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
-              >
-                🌳 Afiliados
-              </a>
-              <div className="border-t border-gray-200 mt-4 pt-4">
-                <a 
-                  href="/"
-                  className="block px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
-                >
-                  🏠 Volver al sitio
-                </a>
-              </div>
+                <Home className="h-5 w-5" />
+                <span className="font-medium">Volver al sitio</span>
+              </Link>
             </nav>
           </aside>
 
           {/* Main Content */}
-          <main className="ml-64 p-8">
-            <div className="max-w-7xl mx-auto">
-              {children}
+          <main className="ml-64 min-h-screen">
+            <div className="p-6 md:p-8">
+              <div className="max-w-7xl mx-auto">
+                {children}
+              </div>
             </div>
           </main>
         </div>

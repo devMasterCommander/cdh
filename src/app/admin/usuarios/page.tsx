@@ -2,6 +2,31 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Users,
+  Plus,
+  Search,
+  Eye,
+  ShoppingCart,
+  BookOpen,
+  Award,
+  Calendar,
+  User,
+  UserCheck
+} from "lucide-react";
 
 type User = {
   id: string;
@@ -64,183 +89,243 @@ export default function UsuariosPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Cargando usuarios...</div>
+      <div className="space-y-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center space-y-4">
+            <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+            <Skeleton className="h-4 w-48 mx-auto" />
+            <Skeleton className="h-3 w-32 mx-auto" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="space-y-6 fade-in">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Usuarios</h1>
-          <p className="text-gray-600 mt-1">
-            Gestiona todos los usuarios de la plataforma
-          </p>
-        </div>
-        <Link
-          href="/admin/usuarios/create"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          + Crear Usuario
-        </Link>
-      </div>
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <CardTitle className="text-3xl font-cinzel flex items-center space-x-2">
+                <Users className="h-7 w-7 text-primary" />
+                <span>Usuarios</span>
+              </CardTitle>
+              <CardDescription className="mt-1">
+                Gestiona todos los usuarios de la plataforma
+              </CardDescription>
+            </div>
+            <Button asChild className="bg-primary hover:bg-primary/90">
+              <Link href="/admin/usuarios/create" className="flex items-center space-x-2">
+                <Plus className="h-4 w-4" />
+                <span>Crear Usuario</span>
+              </Link>
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm text-gray-600">Total Usuarios</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm text-gray-600">Con Compras</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.withPurchases}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm text-gray-600">Afiliados Activos</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.affiliates}</p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Usuarios
+            </CardTitle>
+            <Users className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{stats.total}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Con Compras
+            </CardTitle>
+            <ShoppingCart className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{stats.withPurchases}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Afiliados Activos
+            </CardTitle>
+            <Award className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{stats.affiliates}</div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filtros y búsqueda */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <div className="flex gap-4 mb-4">
-          <button
-            onClick={() => setFilterType("all")}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              filterType === "all"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Todos ({stats.total})
-          </button>
-          <button
-            onClick={() => setFilterType("with-purchases")}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              filterType === "with-purchases"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Con Compras ({stats.withPurchases})
-          </button>
-          <button
-            onClick={() => setFilterType("affiliates")}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              filterType === "affiliates"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Afiliados ({stats.affiliates})
-          </button>
-        </div>
-        <input
-          type="text"
-          placeholder="Buscar por nombre o email..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-        />
-      </div>
+      <Card>
+        <CardContent className="p-4 space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={filterType === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterType("all")}
+              className={filterType === "all" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              Todos ({stats.total})
+            </Button>
+            <Button
+              variant={filterType === "with-purchases" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterType("with-purchases")}
+              className={filterType === "with-purchases" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              Con Compras ({stats.withPurchases})
+            </Button>
+            <Button
+              variant={filterType === "affiliates" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterType("affiliates")}
+              className={filterType === "affiliates" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              Afiliados ({stats.affiliates})
+            </Button>
+          </div>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Buscar por nombre o email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Tabla de usuarios */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Usuario
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Compras
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Progreso
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Referidos
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Patrocinador
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Registro
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredUsuarios.map((usuario) => (
-              <tr key={usuario.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">
-                    {usuario.name || "Sin nombre"}
-                  </div>
-                  <div className="text-sm text-gray-500">{usuario.email}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                    {usuario._count.purchases}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                    {usuario._count.lessonProgress} lecciones
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                    {usuario._count.sponsored}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {usuario.sponsor ? (
-                    <div className="text-sm text-gray-900">
-                      {usuario.sponsor.name || usuario.sponsor.email}
-                    </div>
-                  ) : (
-                    <span className="text-sm text-gray-400">Sin patrocinador</span>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(usuario.createdAt).toLocaleDateString("es-ES", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <Link
-                    href={`/admin/usuarios/${usuario.id}`}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    Ver Detalle
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {filteredUsuarios.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            {searchTerm
-              ? "No se encontraron usuarios con ese criterio"
-              : "No hay usuarios registrados todavía"}
-          </div>
-        )}
-      </div>
+      <Card>
+        <CardContent className="p-0">
+          {filteredUsuarios.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="space-y-4">
+                <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+                  <Users className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground mb-2">
+                    {searchTerm ? "No se encontraron usuarios" : "No hay usuarios registrados"}
+                  </h2>
+                  <p className="text-muted-foreground">
+                    {searchTerm
+                      ? "Intenta con otro término de búsqueda"
+                      : "Los usuarios aparecerán aquí cuando se registren"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Usuario</TableHead>
+                    <TableHead>Compras</TableHead>
+                    <TableHead>Progreso</TableHead>
+                    <TableHead>Referidos</TableHead>
+                    <TableHead>Patrocinador</TableHead>
+                    <TableHead>Registro</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsuarios.map((usuario) => (
+                    <TableRow key={usuario.id} className="hover:bg-muted/50">
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <User className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-foreground">
+                              {usuario.name || "Sin nombre"}
+                            </div>
+                            <div className="text-xs text-muted-foreground">{usuario.email}</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="bg-green-100 text-green-800 hover:bg-green-100 flex items-center space-x-1 w-fit">
+                          <ShoppingCart className="h-3 w-3" />
+                          <span>{usuario._count.purchases}</span>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="bg-primary/10 text-primary hover:bg-primary/20 flex items-center space-x-1 w-fit">
+                          <BookOpen className="h-3 w-3" />
+                          <span>{usuario._count.lessonProgress}</span>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="flex items-center space-x-1 w-fit">
+                          <Award className="h-3 w-3" />
+                          <span>{usuario._count.sponsored}</span>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {usuario.sponsor ? (
+                          <div className="flex items-center space-x-2">
+                            <UserCheck className="h-4 w-4 text-primary" />
+                            <span className="text-sm text-foreground">
+                              {usuario.sponsor.name || usuario.sponsor.email}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">Sin patrocinador</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>
+                            {new Date(usuario.createdAt).toLocaleDateString("es-ES", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link href={`/admin/usuarios/${usuario.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Resumen */}
-      <div className="mt-4 text-sm text-gray-500">
-        Mostrando {filteredUsuarios.length} de {usuarios.length} usuarios
-      </div>
+      {filteredUsuarios.length > 0 && (
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground text-center">
+              Mostrando {filteredUsuarios.length} de {usuarios.length} usuarios
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

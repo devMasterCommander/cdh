@@ -19,7 +19,7 @@ import {
 import {
   Award,
   Users,
-  DollarSign,
+  Euro,
   Copy,
   CheckCircle,
   Clock,
@@ -332,7 +332,7 @@ export default function AfiliadoPage() {
               <Card className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-2 mb-2">
-                    <DollarSign className="h-5 w-5 text-primary" />
+                    <Euro className="h-5 w-5 text-primary" />
                     <h3 className="font-semibold text-foreground">Comisiones Generosas</h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
@@ -510,7 +510,7 @@ export default function AfiliadoPage() {
             </div>
             <div className="border-l-4 border-green-500 pl-4">
               <div className="flex items-center space-x-2 mb-1">
-                <DollarSign className="h-4 w-4 text-green-500" />
+                <Euro className="h-4 w-4 text-green-500" />
                 <p className="text-sm text-muted-foreground">Total Comisiones Generadas</p>
               </div>
               <p className="text-2xl font-bold text-foreground">
@@ -598,7 +598,7 @@ export default function AfiliadoPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <DollarSign className="h-5 w-5 text-primary" />
+            <Euro className="h-5 w-5 text-primary" />
             <span>Historial de Comisiones</span>
           </CardTitle>
           <CardDescription>
@@ -610,7 +610,7 @@ export default function AfiliadoPage() {
             <div className="text-center py-8">
               <div className="space-y-4">
                 <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
-                  <DollarSign className="h-10 w-10 text-muted-foreground" />
+                  <Euro className="h-10 w-10 text-muted-foreground" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-foreground mb-2">

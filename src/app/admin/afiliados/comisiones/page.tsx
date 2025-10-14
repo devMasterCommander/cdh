@@ -2,6 +2,44 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Euro,
+  ArrowLeft,
+  Clock,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  CheckCircle2,
+  User,
+  BookOpen,
+  Calendar,
+  Award,
+  CreditCard,
+  Info
+} from "lucide-react";
 
 type Commission = {
   id: string;
@@ -162,17 +200,6 @@ export default function ComisionesPage() {
     return labels[status] || status;
   };
 
-  const getStatusBadge = (status: string) => {
-    const badges: { [key: string]: string } = {
-      PENDING: "bg-gray-100 text-gray-800",
-      IN_REVIEW: "bg-blue-100 text-blue-800",
-      APPROVED: "bg-green-100 text-green-800",
-      DECLINED: "bg-red-100 text-red-800",
-      PAID: "bg-purple-100 text-purple-800",
-    };
-    return badges[status] || "bg-gray-100 text-gray-800";
-  };
-
   // Calcular totales por estado
   const byStatus = {
     PENDING: comisiones.filter((c) => c.status === "PENDING"),
@@ -194,342 +221,452 @@ export default function ComisionesPage() {
     .filter((c) => selectedCommissions.includes(c.id))
     .reduce((sum, c) => sum + c.amount, 0);
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Pendiente</Badge>;
+      case "IN_REVIEW":
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100"><AlertCircle className="h-3 w-3 mr-1" />En Revisión</Badge>;
+      case "APPROVED":
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100"><CheckCircle2 className="h-3 w-3 mr-1" />Aprobada</Badge>;
+      case "DECLINED":
+        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Declinada</Badge>;
+      case "PAID":
+        return <Badge className="bg-primary/10 text-primary hover:bg-primary/20"><CheckCircle className="h-3 w-3 mr-1" />Pagada</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Cargando comisiones...</div>
+      <div className="space-y-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center space-y-4">
+            <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+            <Skeleton className="h-4 w-48 mx-auto" />
+            <Skeleton className="h-3 w-32 mx-auto" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="space-y-6 fade-in">
       {/* Header */}
-      <div className="mb-6">
-        <Link
-          href="/admin/afiliados"
-          className="text-blue-600 hover:text-blue-800 text-sm mb-2 inline-block"
-        >
-          ← Volver a Afiliados
-        </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Gestión de Comisiones</h1>
-        <p className="text-gray-600 mt-1">
-          Administra estados y procesa pagos de comisiones
-        </p>
+      <div className="space-y-4">
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/admin/afiliados" className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Volver a Afiliados
+          </Link>
+        </Button>
+        
+        <Card>
+          <CardHeader>
+          <CardTitle className="text-3xl font-cinzel flex items-center space-x-2">
+            <Euro className="h-7 w-7 text-primary" />
+            <span>Gestión de Comisiones</span>
+          </CardTitle>
+            <CardDescription>
+              Administra estados y procesa pagos de comisiones
+            </CardDescription>
+          </CardHeader>
+        </Card>
       </div>
 
       {/* Estadísticas por Estado */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-xs text-gray-600 font-medium">Pendientes</p>
-          <p className="text-xl font-bold text-gray-800">
-            {montoByStatus.PENDING.toFixed(2)}€
-          </p>
-          <p className="text-xs text-gray-500">{byStatus.PENDING.length}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-xs text-gray-600 font-medium">En Revisión</p>
-          <p className="text-xl font-bold text-blue-600">
-            {montoByStatus.IN_REVIEW.toFixed(2)}€
-          </p>
-          <p className="text-xs text-gray-500">{byStatus.IN_REVIEW.length}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-xs text-gray-600 font-medium">Aprobadas</p>
-          <p className="text-xl font-bold text-green-600">
-            {montoByStatus.APPROVED.toFixed(2)}€
-          </p>
-          <p className="text-xs text-gray-500">{byStatus.APPROVED.length}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-xs text-gray-600 font-medium">Declinadas</p>
-          <p className="text-xl font-bold text-red-600">
-            {montoByStatus.DECLINED.toFixed(2)}€
-          </p>
-          <p className="text-xs text-gray-500">{byStatus.DECLINED.length}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-xs text-gray-600 font-medium">Pagadas</p>
-          <p className="text-xl font-bold text-purple-600">
-            {montoByStatus.PAID.toFixed(2)}€
-          </p>
-          <p className="text-xs text-gray-500">{byStatus.PAID.length}</p>
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-muted-foreground font-medium">Pendientes</p>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <p className="text-xl font-bold text-foreground">
+              {montoByStatus.PENDING.toFixed(2)}€
+            </p>
+            <p className="text-xs text-muted-foreground">{byStatus.PENDING.length} comisiones</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-muted-foreground font-medium">En Revisión</p>
+              <AlertCircle className="h-4 w-4 text-blue-500" />
+            </div>
+            <p className="text-xl font-bold text-blue-600">
+              {montoByStatus.IN_REVIEW.toFixed(2)}€
+            </p>
+            <p className="text-xs text-muted-foreground">{byStatus.IN_REVIEW.length} comisiones</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-muted-foreground font-medium">Aprobadas</p>
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+            </div>
+            <p className="text-xl font-bold text-green-600">
+              {montoByStatus.APPROVED.toFixed(2)}€
+            </p>
+            <p className="text-xs text-muted-foreground">{byStatus.APPROVED.length} comisiones</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-muted-foreground font-medium">Declinadas</p>
+              <XCircle className="h-4 w-4 text-destructive" />
+            </div>
+            <p className="text-xl font-bold text-destructive">
+              {montoByStatus.DECLINED.toFixed(2)}€
+            </p>
+            <p className="text-xs text-muted-foreground">{byStatus.DECLINED.length} comisiones</p>
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden">
+          <div className="bg-gradient-to-br from-primary to-primary/80 p-4 text-primary-foreground">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs opacity-90 font-medium">Pagadas</p>
+              <CheckCircle className="h-4 w-4 opacity-80" />
+            </div>
+            <p className="text-xl font-bold">
+              {montoByStatus.PAID.toFixed(2)}€
+            </p>
+            <p className="text-xs opacity-75">{byStatus.PAID.length} comisiones</p>
+          </div>
+        </Card>
       </div>
 
       {/* Formulario de Pago */}
       {selectedCommissions.length > 0 && filterStatus === "APPROVED" && (
-        <div className="bg-green-50 border-2 border-green-500 rounded-lg p-6 mb-6">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h3 className="text-lg font-bold text-green-900">
-                💰 Procesar Pago de Comisiones
-              </h3>
-              <p className="text-sm text-green-700 mt-1">
-                {selectedCommissions.length} comisión(es) seleccionada(s) • Total: {montoSeleccionado.toFixed(2)}€
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                setSelectedCommissions([]);
-                setShowPaymentForm(false);
-              }}
-              className="text-green-700 hover:text-green-900"
-            >
-              ✕
-            </button>
-          </div>
-
-          {!showPaymentForm ? (
-            <button
-              onClick={() => setShowPaymentForm(true)}
-              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Continuar con el Pago →
-            </button>
-          ) : (
-            <div className="space-y-4">
+        <Card className="border-green-200 bg-green-50">
+          <CardHeader>
+            <div className="flex items-start justify-between">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Método de Pago *
-                </label>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
-                >
-                  <option value="">Seleccionar método...</option>
-                  <option value="BANK_TRANSFER">Transferencia Bancaria</option>
-                  <option value="PAYPAL">PayPal</option>
-                  <option value="STRIPE">Stripe</option>
-                  <option value="CRYPTO">Criptomonedas</option>
-                  <option value="CASH">Efectivo</option>
-                  <option value="OTHER">Otro</option>
-                </select>
+                <CardTitle className="flex items-center space-x-2 text-green-900">
+                  <Euro className="h-5 w-5" />
+                  <span>Procesar Pago de Comisiones</span>
+                </CardTitle>
+                <CardDescription className="text-green-700">
+                  {selectedCommissions.length} comisión(es) seleccionada(s) • Total: {montoSeleccionado.toFixed(2)}€
+                </CardDescription>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Notas (opcional)
-                </label>
-                <textarea
-                  value={paymentNotes}
-                  onChange={(e) => setPaymentNotes(e.target.value)}
-                  placeholder="Ej: Transferencia #12345, Referencia: ABC123"
-                  rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
-                />
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={handleProcessPayment}
-                  disabled={processing || !paymentMethod}
-                  className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 font-semibold"
-                >
-                  {processing ? "Procesando..." : `Registrar Pago de ${montoSeleccionado.toFixed(2)}€`}
-                </button>
-                <button
-                  onClick={() => setShowPaymentForm(false)}
-                  className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors"
-                >
-                  Cancelar
-                </button>
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedCommissions([]);
+                  setShowPaymentForm(false);
+                }}
+                className="text-green-700 hover:text-green-900"
+              >
+                <XCircle className="h-4 w-4" />
+              </Button>
             </div>
-          )}
-        </div>
+          </CardHeader>
+          <CardContent>
+            {!showPaymentForm ? (
+              <Button
+                onClick={() => setShowPaymentForm(true)}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <CreditCard className="h-4 w-4 mr-2" />
+                Continuar con el Pago
+              </Button>
+            ) : (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="paymentMethod">Método de Pago *</Label>
+                  <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                    <SelectTrigger id="paymentMethod">
+                      <SelectValue placeholder="Seleccionar método..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BANK_TRANSFER">Transferencia Bancaria</SelectItem>
+                      <SelectItem value="PAYPAL">PayPal</SelectItem>
+                      <SelectItem value="STRIPE">Stripe</SelectItem>
+                      <SelectItem value="CRYPTO">Criptomonedas</SelectItem>
+                      <SelectItem value="CASH">Efectivo</SelectItem>
+                      <SelectItem value="OTHER">Otro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="paymentNotes">Notas (opcional)</Label>
+                  <Textarea
+                    id="paymentNotes"
+                    value={paymentNotes}
+                    onChange={(e) => setPaymentNotes(e.target.value)}
+                    placeholder="Ej: Transferencia #12345, Referencia: ABC123"
+                    rows={3}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleProcessPayment}
+                    disabled={processing || !paymentMethod}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    {processing ? "Procesando..." : `Registrar Pago de ${montoSeleccionado.toFixed(2)}€`}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowPaymentForm(false)}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       )}
 
       {/* Filtros por Estado */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={() => { setFilterStatus("all"); setSelectedCommissions([]); }}
-            className={`px-4 py-2 rounded-lg transition-colors text-sm ${
-              filterStatus === "all" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Todas ({comisiones.length})
-          </button>
-          <button
-            onClick={() => { setFilterStatus("PENDING"); setSelectedCommissions([]); }}
-            className={`px-4 py-2 rounded-lg transition-colors text-sm ${
-              filterStatus === "PENDING" ? "bg-gray-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Pendientes ({byStatus.PENDING.length})
-          </button>
-          <button
-            onClick={() => { setFilterStatus("IN_REVIEW"); setSelectedCommissions([]); }}
-            className={`px-4 py-2 rounded-lg transition-colors text-sm ${
-              filterStatus === "IN_REVIEW" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            En Revisión ({byStatus.IN_REVIEW.length})
-          </button>
-          <button
-            onClick={() => { setFilterStatus("APPROVED"); setSelectedCommissions([]); }}
-            className={`px-4 py-2 rounded-lg transition-colors text-sm ${
-              filterStatus === "APPROVED" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Aprobadas ({byStatus.APPROVED.length})
-          </button>
-          <button
-            onClick={() => { setFilterStatus("DECLINED"); setSelectedCommissions([]); }}
-            className={`px-4 py-2 rounded-lg transition-colors text-sm ${
-              filterStatus === "DECLINED" ? "bg-red-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Declinadas ({byStatus.DECLINED.length})
-          </button>
-          <button
-            onClick={() => { setFilterStatus("PAID"); setSelectedCommissions([]); }}
-            className={`px-4 py-2 rounded-lg transition-colors text-sm ${
-              filterStatus === "PAID" ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Pagadas ({byStatus.PAID.length})
-          </button>
-        </div>
-      </div>
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant={filterStatus === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => { setFilterStatus("all"); setSelectedCommissions([]); }}
+              className={filterStatus === "all" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              Todas ({comisiones.length})
+            </Button>
+            <Button
+              variant={filterStatus === "PENDING" ? "default" : "outline"}
+              size="sm"
+              onClick={() => { setFilterStatus("PENDING"); setSelectedCommissions([]); }}
+              className={filterStatus === "PENDING" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              <Clock className="h-3 w-3 mr-1" />
+              Pendientes ({byStatus.PENDING.length})
+            </Button>
+            <Button
+              variant={filterStatus === "IN_REVIEW" ? "default" : "outline"}
+              size="sm"
+              onClick={() => { setFilterStatus("IN_REVIEW"); setSelectedCommissions([]); }}
+              className={filterStatus === "IN_REVIEW" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              <AlertCircle className="h-3 w-3 mr-1" />
+              En Revisión ({byStatus.IN_REVIEW.length})
+            </Button>
+            <Button
+              variant={filterStatus === "APPROVED" ? "default" : "outline"}
+              size="sm"
+              onClick={() => { setFilterStatus("APPROVED"); setSelectedCommissions([]); }}
+              className={filterStatus === "APPROVED" ? "bg-green-600 hover:bg-green-700 text-white" : ""}
+            >
+              <CheckCircle2 className="h-3 w-3 mr-1" />
+              Aprobadas ({byStatus.APPROVED.length})
+            </Button>
+            <Button
+              variant={filterStatus === "DECLINED" ? "default" : "outline"}
+              size="sm"
+              onClick={() => { setFilterStatus("DECLINED"); setSelectedCommissions([]); }}
+              className={filterStatus === "DECLINED" ? "bg-destructive hover:bg-destructive/90" : ""}
+            >
+              <XCircle className="h-3 w-3 mr-1" />
+              Declinadas ({byStatus.DECLINED.length})
+            </Button>
+            <Button
+              variant={filterStatus === "PAID" ? "default" : "outline"}
+              size="sm"
+              onClick={() => { setFilterStatus("PAID"); setSelectedCommissions([]); }}
+              className={filterStatus === "PAID" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              <CheckCircle className="h-3 w-3 mr-1" />
+              Pagadas ({byStatus.PAID.length})
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Tabla agrupada por Afiliado */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {Object.values(agrupadoPorAfiliado).map((group: any) => {
           const totalAfiliado = group.comisiones.reduce((sum: number, c: Commission) => sum + c.amount, 0);
           const canSelect = group.comisiones.every((c: Commission) => c.status === "APPROVED");
           const allSelected = group.comisiones.every((c: Commission) => selectedCommissions.includes(c.id));
 
           return (
-            <div key={group.affiliate.id} className="bg-white rounded-lg shadow">
-              <div className="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                  <Link
-                    href={`/admin/usuarios/${group.affiliate.id}`}
-                    className="text-lg font-bold text-blue-600 hover:text-blue-800"
-                  >
-                    {group.affiliate.name || group.affiliate.email}
-                  </Link>
-                  <span className="text-sm text-gray-600">
-                    {group.comisiones.length} comisión(es) • {totalAfiliado.toFixed(2)}€
-                  </span>
+            <Card key={group.affiliate.id}>
+              <CardHeader className="bg-muted/50">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-4">
+                    <Award className="h-5 w-5 text-primary" />
+                    <div>
+                      <Link
+                        href={`/admin/usuarios/${group.affiliate.id}`}
+                        className="text-lg font-bold text-primary hover:text-primary/80"
+                      >
+                        {group.affiliate.name || group.affiliate.email}
+                      </Link>
+                      <p className="text-sm text-muted-foreground">
+                        {group.comisiones.length} comisión(es) • {totalAfiliado.toFixed(2)}€
+                      </p>
+                    </div>
+                  </div>
+                  {canSelect && filterStatus === "APPROVED" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSelectAllFromAffiliate(group.affiliate.id)}
+                    >
+                      {allSelected ? "Deseleccionar todas" : "Seleccionar todas"}
+                    </Button>
+                  )}
                 </div>
-                {canSelect && filterStatus === "APPROVED" && (
-                  <button
-                    onClick={() => handleSelectAllFromAffiliate(group.affiliate.id)}
-                    className="text-sm text-blue-600 hover:text-blue-800"
-                  >
-                    {allSelected ? "Deseleccionar todas" : "Seleccionar todas"}
-                  </button>
-                )}
-              </div>
-
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    {filterStatus === "APPROVED" && (
-                      <th className="px-6 py-3 w-12"></th>
-                    )}
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Comprador
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Curso
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Nivel
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Monto
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Estado
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Fecha
-                    </th>
-                    {filterStatus !== "PAID" && filterStatus !== "DECLINED" && (
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                        Acciones
-                      </th>
-                    )}
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {group.comisiones.map((comision: Commission) => (
-                    <tr key={comision.id} className="hover:bg-gray-50">
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
                       {filterStatus === "APPROVED" && (
-                        <td className="px-6 py-4">
-                          <input
-                            type="checkbox"
-                            checked={selectedCommissions.includes(comision.id)}
-                            onChange={() => handleSelectCommission(comision.id)}
-                            className="w-4 h-4 text-green-600"
-                          />
-                        </td>
+                        <TableHead className="w-12"></TableHead>
                       )}
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {comision.buyer.name || comision.buyer.email}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {comision.course.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                          Nivel {comision.level}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                        {comision.amount.toFixed(2)}€
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(comision.status)}`}>
-                          {getStatusLabel(comision.status)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(comision.createdAt).toLocaleDateString("es-ES")}
-                      </td>
+                      <TableHead>Comprador</TableHead>
+                      <TableHead>Curso</TableHead>
+                      <TableHead>Nivel</TableHead>
+                      <TableHead>Monto</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Fecha</TableHead>
                       {filterStatus !== "PAID" && filterStatus !== "DECLINED" && (
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
-                          <select
-                            value={comision.status}
-                            onChange={(e) => handleChangeStatus(comision.id, e.target.value)}
-                            className="text-xs px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
-                          >
-                            <option value="PENDING">Pendiente</option>
-                            <option value="IN_REVIEW">En Revisión</option>
-                            <option value="APPROVED">Aprobar</option>
-                            <option value="DECLINED">Declinar</option>
-                          </select>
-                        </td>
+                        <TableHead className="text-right">Acciones</TableHead>
                       )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {group.comisiones.map((comision: Commission) => (
+                      <TableRow key={comision.id} className="hover:bg-muted/50">
+                        {filterStatus === "APPROVED" && (
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedCommissions.includes(comision.id)}
+                              onCheckedChange={() => handleSelectCommission(comision.id)}
+                            />
+                          </TableCell>
+                        )}
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <User className="h-4 w-4 text-primary" />
+                            <span className="text-sm text-foreground">
+                              {comision.buyer.name || comision.buyer.email}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <BookOpen className="h-4 w-4 text-primary" />
+                            <span className="text-sm text-foreground">{comision.course.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">Nivel {comision.level}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                            {comision.amount.toFixed(2)}€
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {getStatusBadge(comision.status)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            <span>{new Date(comision.createdAt).toLocaleDateString("es-ES")}</span>
+                          </div>
+                        </TableCell>
+                        {filterStatus !== "PAID" && filterStatus !== "DECLINED" && (
+                          <TableCell className="text-right">
+                            <Select
+                              value={comision.status}
+                              onValueChange={(value) => handleChangeStatus(comision.id, value)}
+                            >
+                              <SelectTrigger className="w-32">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="PENDING">Pendiente</SelectItem>
+                                <SelectItem value="IN_REVIEW">En Revisión</SelectItem>
+                                <SelectItem value="APPROVED">Aprobar</SelectItem>
+                                <SelectItem value="DECLINED">Declinar</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           );
         })}
 
         {filteredComisiones.length === 0 && (
-          <div className="bg-white rounded-lg shadow p-12 text-center text-gray-500">
-            No hay comisiones con estado "{getStatusLabel(filterStatus)}"
-          </div>
+          <Card>
+            <CardContent className="p-12 text-center">
+              <div className="space-y-4">
+                <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+                  <Euro className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground mb-2">
+                    No hay comisiones con este estado
+                  </h2>
+                  <p className="text-muted-foreground">
+                    No hay comisiones con estado "{getStatusLabel(filterStatus)}"
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
 
       {/* Información sobre estados */}
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="text-sm font-semibold text-blue-900 mb-2">📋 Estados de Comisión:</h4>
-        <ul className="text-xs text-blue-800 space-y-1">
-          <li>• <strong>Pendiente:</strong> Generada automáticamente al comprar</li>
-          <li>• <strong>En Revisión:</strong> Bajo auditoría (subtotal se muestra pero no suma ni resta)</li>
-          <li>• <strong>Aprobada:</strong> Cumple condiciones, lista para pagar (suma)</li>
-          <li>• <strong>Declinada:</strong> No cumple condiciones (no suma)</li>
-          <li>• <strong>Pagada:</strong> Ya pagada al afiliado</li>
-        </ul>
-      </div>
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader>
+          <CardTitle className="text-sm flex items-center space-x-2">
+            <Info className="h-4 w-4 text-primary" />
+            <span>Estados de Comisión</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="text-sm text-foreground space-y-2">
+            <li className="flex items-start space-x-2">
+              <Clock className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <span><strong>Pendiente:</strong> Generada automáticamente al comprar</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <AlertCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+              <span><strong>En Revisión:</strong> Bajo auditoría (subtotal se muestra pero no suma ni resta)</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+              <span><strong>Aprobada:</strong> Cumple condiciones, lista para pagar (suma)</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <XCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+              <span><strong>Declinada:</strong> No cumple condiciones (no suma)</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+              <span><strong>Pagada:</strong> Ya pagada al afiliado</span>
+            </li>
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 }

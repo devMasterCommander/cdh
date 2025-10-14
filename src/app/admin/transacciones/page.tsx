@@ -2,6 +2,30 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  CreditCard,
+  Search,
+  Eye,
+  Euro,
+  Calendar,
+  User,
+  BookOpen,
+  TrendingUp,
+  Filter
+} from "lucide-react";
 
 type Transaction = {
   id: string;
@@ -87,195 +111,246 @@ export default function TransaccionesPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Cargando transacciones...</div>
+      <div className="space-y-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center space-y-4">
+            <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+            <Skeleton className="h-4 w-48 mx-auto" />
+            <Skeleton className="h-3 w-32 mx-auto" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="space-y-6 fade-in">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Transacciones</h1>
-        <p className="text-gray-600 mt-1">
-          Historial completo de compras y ventas
-        </p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-3xl font-cinzel flex items-center space-x-2">
+            <CreditCard className="h-7 w-7 text-primary" />
+            <span>Transacciones</span>
+          </CardTitle>
+          <CardDescription>
+            Historial completo de compras y ventas
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Total Transacciones</p>
-          <p className="text-2xl font-bold text-gray-900">{transacciones.length}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Ingresos Totales</p>
-          <p className="text-2xl font-bold text-gray-900">{totalIngresosGeneral.toFixed(2)}€</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Promedio por Venta</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {transacciones.length > 0
-              ? (totalIngresosGeneral / transacciones.length).toFixed(2)
-              : "0.00"}
-            €
-          </p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Transacciones
+            </CardTitle>
+            <CreditCard className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{transacciones.length}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow overflow-hidden">
+          <div className="bg-gradient-to-br from-primary to-primary/80 p-6 text-primary-foreground">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm opacity-90 font-medium">Ingresos Totales</p>
+                <p className="text-2xl font-bold mt-2">{totalIngresosGeneral.toFixed(2)}€</p>
+              </div>
+              <Euro className="h-8 w-8 opacity-80" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Promedio por Venta
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">
+              {transacciones.length > 0
+                ? (totalIngresosGeneral / transacciones.length).toFixed(2)
+                : "0.00"}
+              €
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <div className="flex gap-4 mb-4">
-          <button
-            onClick={() => setFilterPeriod("all")}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              filterPeriod === "all"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Todas
-          </button>
-          <button
-            onClick={() => setFilterPeriod("today")}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              filterPeriod === "today"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Hoy
-          </button>
-          <button
-            onClick={() => setFilterPeriod("week")}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              filterPeriod === "week"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Últimos 7 días
-          </button>
-          <button
-            onClick={() => setFilterPeriod("month")}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              filterPeriod === "month"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-          >
-            Último mes
-          </button>
-        </div>
-        <input
-          type="text"
-          placeholder="Buscar por usuario o curso..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-        />
-      </div>
+      <Card>
+        <CardContent className="p-4 space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={filterPeriod === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterPeriod("all")}
+              className={filterPeriod === "all" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              Todas
+            </Button>
+            <Button
+              variant={filterPeriod === "today" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterPeriod("today")}
+              className={filterPeriod === "today" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              Hoy
+            </Button>
+            <Button
+              variant={filterPeriod === "week" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterPeriod("week")}
+              className={filterPeriod === "week" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              Últimos 7 días
+            </Button>
+            <Button
+              variant={filterPeriod === "month" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterPeriod("month")}
+              className={filterPeriod === "month" ? "bg-primary hover:bg-primary/90" : ""}
+            >
+              Último mes
+            </Button>
+          </div>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Buscar por usuario o curso..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Resultados filtrados */}
       {filterPeriod !== "all" && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-blue-800">
-            📊 Mostrando {filteredTransacciones.length} transacciones • Ingresos: {totalIngresos.toFixed(2)}€
-          </p>
-        </div>
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2 text-sm">
+              <Filter className="h-4 w-4 text-primary" />
+              <span className="text-foreground">
+                Mostrando {filteredTransacciones.length} transacciones • Ingresos: {totalIngresos.toFixed(2)}€
+              </span>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Tabla */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Usuario
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Curso
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Monto
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Fecha
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Payment ID
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredTransacciones.map((t) => (
-              <tr key={t.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <Link
-                    href={`/admin/usuarios/${t.user.id}`}
-                    className="text-sm font-medium text-blue-600 hover:text-blue-800"
-                  >
-                    {t.user.name || "Sin nombre"}
-                  </Link>
-                  <div className="text-sm text-gray-500">{t.user.email}</div>
-                </td>
-                <td className="px-6 py-4">
-                  <Link
-                    href={`/admin/cursos/${t.course.id}`}
-                    className="text-sm text-blue-600 hover:text-blue-800"
-                  >
-                    {t.course.name}
-                  </Link>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-bold text-gray-900">
-                    {t.course.price.toFixed(2)}€
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(t.createdAt).toLocaleDateString("es-ES", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </td>
-                <td className="px-6 py-4">
-                  <code className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
-                    {t.stripePaymentIntentId.substring(0, 20)}...
-                  </code>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <Link
-                    href={`/admin/transacciones/${t.id}`}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    Ver Detalle
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {filteredTransacciones.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            {searchTerm
-              ? "No se encontraron transacciones con ese criterio"
-              : "No hay transacciones registradas todavía"}
-          </div>
-        )}
-      </div>
+      <Card>
+        <CardContent className="p-0">
+          {filteredTransacciones.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="space-y-4">
+                <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+                  <CreditCard className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground mb-2">
+                    {searchTerm ? "No se encontraron transacciones" : "No hay transacciones registradas"}
+                  </h2>
+                  <p className="text-muted-foreground">
+                    {searchTerm
+                      ? "Intenta con otro término de búsqueda"
+                      : "Las transacciones aparecerán aquí cuando se realicen compras"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Usuario</TableHead>
+                    <TableHead>Curso</TableHead>
+                    <TableHead>Monto</TableHead>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead>Payment ID</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredTransacciones.map((t) => (
+                    <TableRow key={t.id} className="hover:bg-muted/50">
+                      <TableCell>
+                        <Link
+                          href={`/admin/usuarios/${t.user.id}`}
+                          className="text-sm font-medium text-primary hover:text-primary/80"
+                        >
+                          {t.user.name || "Sin nombre"}
+                        </Link>
+                        <div className="text-xs text-muted-foreground">{t.user.email}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/admin/cursos/${t.course.id}`}
+                          className="text-sm text-primary hover:text-primary/80 flex items-center space-x-2"
+                        >
+                          <BookOpen className="h-4 w-4" />
+                          <span>{t.course.name}</span>
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                          {t.course.price.toFixed(2)}€
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>
+                            {new Date(t.createdAt).toLocaleDateString("es-ES", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="font-mono text-xs">
+                          {t.stripePaymentIntentId.substring(0, 20)}...
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link href={`/admin/transacciones/${t.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Resumen */}
-      <div className="mt-4 text-sm text-gray-500">
-        Mostrando {filteredTransacciones.length} de {transacciones.length} transacciones
-      </div>
+      {filteredTransacciones.length > 0 && (
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground text-center">
+              Mostrando {filteredTransacciones.length} de {transacciones.length} transacciones
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -16,7 +16,7 @@ import {
   AlertCircle,
   XCircle,
   ChevronRight,
-  DollarSign,
+  Euro,
   Clock,
   Award
 } from "lucide-react";
@@ -289,11 +289,10 @@ export default function CourseDetail({ course, hasPurchased, hasSession }: Cours
                   <div className="text-center mb-4">
                     <p className="text-sm text-muted-foreground mb-2">Precio del curso</p>
                     <div className="flex items-baseline justify-center space-x-2">
-                      <DollarSign className="h-6 w-6 text-primary" />
                       <p className="text-5xl font-bold text-primary">
                         {course.price.toFixed(2)}
                       </p>
-                      <span className="text-2xl text-muted-foreground">€</span>
+                      <span className="text-2xl text-primary">€</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
                       Pago único • Acceso de por vida

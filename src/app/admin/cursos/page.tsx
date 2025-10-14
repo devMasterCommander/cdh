@@ -2,6 +2,31 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  BookOpen,
+  Plus,
+  Search,
+  Eye,
+  Edit,
+  Trash2,
+  Layers,
+  ShoppingCart,
+  Calendar,
+  Euro
+} from "lucide-react";
 
 type Course = {
   id: string;
@@ -64,130 +89,178 @@ export default function CursosPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Cargando cursos...</div>
+      <div className="space-y-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center space-y-4">
+            <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+            <Skeleton className="h-4 w-48 mx-auto" />
+            <Skeleton className="h-3 w-32 mx-auto" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="space-y-6 fade-in">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Cursos</h1>
-          <p className="text-gray-600 mt-1">
-            Gestiona todos los cursos de la plataforma
-          </p>
-        </div>
-        <Link
-          href="/admin/cursos/create"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          + Crear Curso
-        </Link>
-      </div>
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <CardTitle className="text-3xl font-cinzel flex items-center space-x-2">
+                <BookOpen className="h-7 w-7 text-primary" />
+                <span>Cursos</span>
+              </CardTitle>
+              <CardDescription className="mt-1">
+                Gestiona todos los cursos de la plataforma
+              </CardDescription>
+            </div>
+            <Button asChild className="bg-primary hover:bg-primary/90">
+              <Link href="/admin/cursos/create" className="flex items-center space-x-2">
+                <Plus className="h-4 w-4" />
+                <span>Crear Curso</span>
+              </Link>
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
 
       {/* Buscador */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <input
-          type="text"
-          placeholder="Buscar cursos..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-        />
-      </div>
+      <Card>
+        <CardContent className="p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Buscar cursos por nombre..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Tabla de cursos */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Curso
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Precio
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Módulos
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ventas
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Fecha de creación
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredCursos.map((curso) => (
-              <tr key={curso.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">
-                    {curso.name}
-                  </div>
-                  <div className="text-sm text-gray-500">ID: {curso.id}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
-                    {curso.price.toFixed(2)}€
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                    {curso._count.modules} módulos
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                    {curso._count.purchases} ventas
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(curso.createdAt).toLocaleDateString("es-ES", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <Link
-                    href={`/admin/cursos/${curso.id}`}
-                    className="text-blue-600 hover:text-blue-900 mr-4"
-                  >
-                    Ver
-                  </Link>
-                  <Link
-                    href={`/admin/cursos/${curso.id}/edit`}
-                    className="text-green-600 hover:text-green-900 mr-4"
-                  >
-                    Editar
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(curso.id, curso.name)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {filteredCursos.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            {searchTerm
-              ? "No se encontraron cursos con ese nombre"
-              : "No hay cursos creados todavía"}
-          </div>
-        )}
-      </div>
+      <Card>
+        <CardContent className="p-0">
+          {filteredCursos.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="space-y-4">
+                <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+                  <BookOpen className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground mb-2">
+                    {searchTerm ? "No se encontraron cursos" : "No hay cursos creados"}
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    {searchTerm
+                      ? "Intenta con otro término de búsqueda"
+                      : "Crea tu primer curso para comenzar"}
+                  </p>
+                  {!searchTerm && (
+                    <Button asChild className="bg-primary hover:bg-primary/90">
+                      <Link href="/admin/cursos/create" className="flex items-center space-x-2">
+                        <Plus className="h-4 w-4" />
+                        <span>Crear Primer Curso</span>
+                      </Link>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Curso</TableHead>
+                    <TableHead>Precio</TableHead>
+                    <TableHead>Módulos</TableHead>
+                    <TableHead>Ventas</TableHead>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredCursos.map((curso) => (
+                    <TableRow key={curso.id} className="hover:bg-muted/50">
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <BookOpen className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-foreground">
+                              {curso.name}
+                            </div>
+                            <div className="text-xs text-muted-foreground">ID: {curso.id.slice(0, 12)}...</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-1">
+                          <Euro className="h-4 w-4 text-primary" />
+                          <span className="text-sm font-semibold text-foreground">
+                            {curso.price.toFixed(2)}€
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="flex items-center space-x-1 w-fit">
+                          <Layers className="h-3 w-3" />
+                          <span>{curso._count.modules}</span>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="bg-green-100 text-green-800 hover:bg-green-100 flex items-center space-x-1 w-fit">
+                          <ShoppingCart className="h-3 w-3" />
+                          <span>{curso._count.purchases}</span>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>
+                            {new Date(curso.createdAt).toLocaleDateString("es-ES", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end space-x-2">
+                          <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/admin/cursos/${curso.id}`}>
+                              <Eye className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                          <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/admin/cursos/${curso.id}/edit`}>
+                              <Edit className="h-4 w-4 text-primary" />
+                            </Link>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(curso.id, curso.name)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
