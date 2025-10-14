@@ -64,7 +64,7 @@ export default function CoursePage() {
               Tu pago se ha procesado correctamente
             </p>
             <Link
-              href="/mis-cursos"
+              href="/mi-cuenta/mis-cursos"
               className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold"
             >
               Ver Mis Cursos →

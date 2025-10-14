@@ -68,8 +68,52 @@ export default function CursosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-gray-100">
+      {/* Barra de Navegación */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link
+                href="/"
+                className="text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2"
+              >
+                <span>←</span>
+                <span className="hidden sm:inline">Inicio</span>
+              </Link>
+              {session && (
+                <>
+                  <span className="text-gray-300">|</span>
+                  <Link
+                    href="/mi-cuenta"
+                    className="text-gray-600 hover:text-gray-900 transition-colors text-sm"
+                  >
+                    👤 Mi Cuenta
+                  </Link>
+                </>
+              )}
+            </div>
+            {session && (
+              <Link
+                href="/mi-cuenta/mis-cursos"
+                className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Mis Cursos
+              </Link>
+            )}
+            {!session && (
+              <Link
+                href="/api/auth/signin"
+                className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                Iniciar Sesión
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
@@ -84,7 +128,7 @@ export default function CursosPage() {
         <div className="mb-8 flex justify-center gap-4">
           {session && (
             <Link
-              href="/mis-cursos"
+              href="/mi-cuenta/mis-cursos"
               className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
               Mis Cursos

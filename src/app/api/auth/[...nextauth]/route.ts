@@ -18,11 +18,11 @@ export const authOptions = {
     }),
   ],
   events: {
-    createUser: async (message) => {
+    createUser: async (message: any) => {
       /* inicio lógica de asignación de patrocinador */
       
       // 1. Leer la cookie de referido
-      const cookieStore = cookies();
+      const cookieStore = await cookies();
       const referrerSlug = cookieStore.get(REFERRAL_COOKIE_NAME)?.value;
 
       if (referrerSlug) {
@@ -49,7 +49,15 @@ export const authOptions = {
       /* fin lógica de asignación de patrocinador */
     },
   },
-  callbacks: {},
+  callbacks: {
+    async session({ session, user }: any) {
+      // Añadir ID del usuario a la sesión
+      if (session.user) {
+        session.user.id = user.id;
+      }
+      return session;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

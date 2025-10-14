@@ -61,7 +61,7 @@ export default function CourseDetail({ course, hasPurchased, hasSession }: Cours
           )}
 
           <Link
-            href="/mis-cursos"
+            href="/mi-cuenta/mis-cursos"
             className="text-blue-600 hover:text-blue-800 mb-4 inline-block"
           >
             ← Volver a Mis Cursos

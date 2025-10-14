@@ -2,7 +2,25 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+    <div className="font-sans min-h-screen">
+      {/* Banner Demo - Solo en desarrollo */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <p className="text-sm font-medium">
+              🎭 <strong>Usuario Demo disponible</strong> - Prueba el dashboard sin configuración
+            </p>
+            <a 
+              href="/demo-login"
+              className="bg-white text-purple-600 px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors"
+            >
+              Login Demo →
+            </a>
+          </div>
+        </div>
+      )}
+      
+      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-[calc(100vh-52px)] p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <Image
           className="dark:invert"
@@ -98,6 +116,7 @@ export default function Home() {
           Go to nextjs.org →
         </a>
       </footer>
+      </div>
     </div>
   );
 }
