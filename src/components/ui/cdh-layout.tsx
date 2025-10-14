@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -65,6 +66,7 @@ export function CdhLayout({ children, user }: CdhLayoutProps) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const isMobile = useIsMobile();
 
   const isActive = (href: string) => {
     if (href === "/mi-cuenta") {
@@ -78,7 +80,7 @@ export function CdhLayout({ children, user }: CdhLayoutProps) {
       case "ADMIN":
         return <Badge variant="destructive">Admin</Badge>;
       case "AFFILIATE":
-        return <Badge className="bg-cdh-secondary text-white">Afiliado</Badge>;
+        return <Badge className="bg-secondary text-secondary-foreground">Afiliado</Badge>;
       case "CUSTOMER":
         return <Badge variant="secondary">Cliente</Badge>;
       default:
@@ -91,12 +93,12 @@ export function CdhLayout({ children, user }: CdhLayoutProps) {
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-cdh-primary to-cdh-secondary rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
             <span className="text-white font-cinzel font-bold text-lg">CDH</span>
           </div>
           {!collapsed && (
             <div>
-              <h1 className="font-cinzel text-xl text-cdh-accent">Mi Cuenta</h1>
+              <h1 className="font-cinzel text-xl text-foreground">Mi Cuenta</h1>
               <p className="text-sm text-gray-500 font-courgette">Centro de Desarrollo Humano</p>
             </div>
           )}
@@ -108,7 +110,7 @@ export function CdhLayout({ children, user }: CdhLayoutProps) {
         <div className="flex items-center space-x-3">
           <Avatar className="w-12 h-12">
             <AvatarImage src="" />
-            <AvatarFallback className="bg-cdh-primary text-white">
+            <AvatarFallback className="bg-primary text-white">
               {user?.name?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>
@@ -135,13 +137,13 @@ export function CdhLayout({ children, user }: CdhLayoutProps) {
           const active = isActive(item.href);
           
           return (
-            <Link key={item.name} href={item.href}>
+            <Link key={item.name} href={item.href} onClick={() => isMobile && setSidebarOpen(false)}>
               <Button
                 variant={active ? "default" : "ghost"}
-                className={`w-full justify-start h-auto p-4 ${
+                className={`w-full justify-start h-auto p-4 transition-all duration-200 ${
                   active 
-                    ? "bg-cdh-primary text-white shadow-md" 
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-primary text-primary-foreground shadow-lg border-2 border-primary hover:bg-primary/90 font-semibold" 
+                    : "text-gray-700 hover:bg-primary/10 hover:text-primary hover:border-primary/20"
                 } ${collapsed ? "px-3" : ""}`}
               >
                 <Icon className={`h-5 w-5 ${collapsed ? "" : "mr-3"}`} />
@@ -175,22 +177,23 @@ export function CdhLayout({ children, user }: CdhLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile Header */}
-      <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3">
+      {/* Mobile & Tablet Header */}
+      <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-cdh-primary to-cdh-secondary rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
               <span className="text-white font-cinzel font-bold text-sm">CDH</span>
             </div>
-            <h1 className="font-cinzel text-lg text-cdh-accent">Mi Cuenta</h1>
+            <h1 className="font-cinzel text-lg text-foreground">Mi Cuenta</h1>
           </div>
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200">
                 <Menu className="h-4 w-4" />
+                <span className="ml-2 hidden sm:inline">Menú</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-80">
+            <SheetContent side="left" className="p-0 w-80 sm:w-96">
               <SheetHeader className="sr-only">
                 <SheetTitle>Navegación del Dashboard</SheetTitle>
               </SheetHeader>

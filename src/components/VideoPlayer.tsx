@@ -3,7 +3,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Player from '@vimeo/player';
-import { throttle } from 'lodash'; // Usaremos lodash para no saturar la API
+import { throttle } from 'lodash';
+import { Button } from "@/components/ui/button";
+import { CheckCircle, Circle } from "lucide-react";
 
 interface VideoPlayerProps {
   lessonId: string;
@@ -66,11 +68,11 @@ export default function VideoPlayer({
       player.off('ended');
       player.destroy();
     };
-  }, [lessonId, initialTimestamp]); // Vuelve a ejecutar si la lección cambia
+  }, [lessonId, initialTimestamp]);
 
   return (
-    <div>
-      <div style={{ padding: '56.25% 0 0 0', position: 'relative' }}>
+    <div className="space-y-4">
+      <div className="relative rounded-lg overflow-hidden shadow-lg" style={{ padding: '56.25% 0 0 0' }}>
         <iframe
           ref={iframeRef}
           src={videoUrl}
@@ -86,17 +88,27 @@ export default function VideoPlayer({
           title="Lesson Video"
         ></iframe>
       </div>
-      <div className="mt-4 flex justify-end">
-        <button
+      <div className="flex justify-end">
+        <Button
           onClick={() => markAsComplete(!isCompleted)}
-          className={`font-bold py-2 px-4 rounded-lg transition-colors ${
+          className={
             isCompleted
-              ? 'bg-green-500 hover:bg-green-600 text-white'
-              : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-          }`}
+              ? 'bg-green-600 hover:bg-green-700 text-white'
+              : 'bg-primary hover:bg-primary/90 text-primary-foreground'
+          }
         >
-          {isCompleted ? '✓ Lección Completada' : 'Marcar como Completada'}
-        </button>
+          {isCompleted ? (
+            <>
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Lección Completada
+            </>
+          ) : (
+            <>
+              <Circle className="h-4 w-4 mr-2" />
+              Marcar como Completada
+            </>
+          )}
+        </Button>
       </div>
     </div>
   );

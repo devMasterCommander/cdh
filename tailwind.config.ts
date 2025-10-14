@@ -9,6 +9,9 @@ export default {
   theme: {
     extend: {
       colors: {
+        'cdh-primary': 'var(--cdh-primary)',
+        'cdh-secondary': 'var(--cdh-secondary)',
+        'cdh-accent': 'var(--cdh-accent)',
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: {

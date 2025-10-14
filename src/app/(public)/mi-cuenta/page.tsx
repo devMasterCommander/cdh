@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, Users, Calendar, User, Edit3, Save, X } from "lucide-react";
+import { BookOpen, Users, Calendar, User, Edit3, Save, X, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 type UserData = {
   id: string;
@@ -98,7 +99,7 @@ export default function MiPerfilPage() {
       case "ADMIN":
         return <Badge variant="destructive">Administrador</Badge>;
       case "AFFILIATE":
-        return <Badge className="bg-cdh-secondary text-white">Afiliado</Badge>;
+        return <Badge className="bg-secondary text-secondary-foreground">Afiliado</Badge>;
       case "CUSTOMER":
         return <Badge variant="secondary">Cliente</Badge>;
       default:
@@ -134,11 +135,11 @@ export default function MiPerfilPage() {
     <div className="space-y-6 fade-in">
       {/* Header con Avatar */}
       <Card className="overflow-hidden">
-        <div className="bg-gradient-to-r from-cdh-primary to-cdh-secondary p-6 text-white">
+        <div className="bg-gradient-to-r from-primary to-secondary p-6 text-white">
           <div className="flex items-center space-x-4">
             <Avatar className="w-20 h-20 border-4 border-white">
               <AvatarImage src="" />
-              <AvatarFallback className="text-xl font-cinzel bg-white text-cdh-accent">
+              <AvatarFallback className="text-xl font-cinzel bg-white text-primary">
                 {userData.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
@@ -155,55 +156,61 @@ export default function MiPerfilPage() {
 
       {/* Estadísticas Rápidas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Cursos Comprados
-            </CardTitle>
-            <BookOpen className="h-4 w-4 text-cdh-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-cdh-accent">{userData._count.purchases}</div>
-            <p className="text-xs text-muted-foreground">
-              Total de cursos adquiridos
-            </p>
-          </CardContent>
-        </Card>
+        <Link href="/mi-cuenta/mis-cursos">
+          <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 cursor-pointer group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Cursos Comprados
+              </CardTitle>
+              <BookOpen className="h-4 w-4 text-primary group-hover:text-primary/80 transition-colors" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">{userData._count.purchases}</div>
+              <p className="text-xs text-muted-foreground flex items-center">
+                Total de cursos adquiridos
+                <ArrowRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Personas Referidas
-            </CardTitle>
-            <Users className="h-4 w-4 text-cdh-secondary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-cdh-accent">{userData._count.sponsored}</div>
-            <p className="text-xs text-muted-foreground">
-              Usuarios que te refirieron
-            </p>
-          </CardContent>
-        </Card>
+        <Link href="/mi-cuenta/afiliado">
+          <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 cursor-pointer group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Personas Referidas
+              </CardTitle>
+              <Users className="h-4 w-4 text-secondary group-hover:text-secondary/80 transition-colors" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-foreground group-hover:text-secondary transition-colors">{userData._count.sponsored}</div>
+              <p className="text-xs text-muted-foreground flex items-center">
+                Usuarios que te refirieron
+                <ArrowRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Miembro Desde
-            </CardTitle>
-            <Calendar className="h-4 w-4 text-cdh-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold text-cdh-accent">
-              {new Date(userData.createdAt).toLocaleDateString("es-ES", {
-                month: "short",
-                year: "numeric",
-              })}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Fecha de registro
-            </p>
-          </CardContent>
-        </Card>
+        <Link href="/mi-cuenta/progreso">
+          <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 cursor-pointer group">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Mi Progreso
+              </CardTitle>
+              <Calendar className="h-4 w-4 text-primary group-hover:text-primary/80 transition-colors" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                Ver Estadísticas
+              </div>
+              <p className="text-xs text-muted-foreground flex items-center">
+                Progreso de aprendizaje
+                <ArrowRight className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Datos Personales */}
@@ -212,7 +219,7 @@ export default function MiPerfilPage() {
           <div className="flex justify-between items-center">
             <div>
               <CardTitle className="flex items-center space-x-2">
-                <User className="h-5 w-5 text-cdh-primary" />
+                <User className="h-5 w-5 text-primary" />
                 <span>Datos Personales</span>
               </CardTitle>
               <CardDescription>
@@ -224,7 +231,7 @@ export default function MiPerfilPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => setEditing(true)}
-                className="text-cdh-primary border-cdh-primary hover:bg-cdh-primary hover:text-white"
+                className="text-primary border-primary hover:bg-primary hover:text-primary-foreground transition-all duration-200 font-semibold"
               >
                 <Edit3 className="h-4 w-4 mr-2" />
                 Editar
@@ -260,7 +267,7 @@ export default function MiPerfilPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Tu nombre completo"
-                    className="border-cdh-primary focus:ring-cdh-primary"
+                    className="border-primary focus:ring-primary"
                   />
                 </div>
                 <div className="space-y-2">
@@ -271,7 +278,7 @@ export default function MiPerfilPage() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="tu@email.com"
-                    className="border-cdh-primary focus:ring-cdh-primary"
+                    className="border-primary focus:ring-primary"
                   />
                 </div>
               </div>
@@ -279,7 +286,7 @@ export default function MiPerfilPage() {
                 <Button
                   onClick={handleSave}
                   disabled={saving}
-                  className="bg-cdh-primary hover:bg-cdh-primary-dark"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 font-semibold shadow-lg"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   {saving ? "Guardando..." : "Guardar Cambios"}
@@ -290,6 +297,7 @@ export default function MiPerfilPage() {
                     setEditing(false);
                     setFormData({ name: userData.name || "", email: userData.email || "" });
                   }}
+                  className="hover:bg-gray-100 hover:text-gray-900 transition-all duration-200 font-semibold"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Cancelar
@@ -304,7 +312,7 @@ export default function MiPerfilPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <User className="h-5 w-5 text-cdh-primary" />
+                <User className="h-5 w-5 text-primary" />
             <span>Información de Cuenta</span>
           </CardTitle>
           <CardDescription>

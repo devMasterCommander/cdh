@@ -103,7 +103,7 @@ export default function MisCursosPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <BookOpen className="h-6 w-6 text-cdh-primary" />
+            <BookOpen className="h-6 w-6 text-primary" />
             <span>Mis Cursos</span>
           </CardTitle>
           <CardDescription>
@@ -120,10 +120,10 @@ export default function MisCursosPage() {
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Total de Cursos
               </CardTitle>
-              <BookOpen className="h-4 w-4 text-cdh-primary" />
+              <BookOpen className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-cdh-accent">{cursos.length}</div>
+              <div className="text-2xl font-bold text-foreground">{cursos.length}</div>
               <p className="text-xs text-muted-foreground">
                 Cursos adquiridos
               </p>
@@ -135,10 +135,10 @@ export default function MisCursosPage() {
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Progreso Promedio
               </CardTitle>
-              <TrendingUp className="h-4 w-4 text-cdh-secondary" />
+              <TrendingUp className="h-4 w-4 text-secondary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-cdh-accent">
+              <div className="text-2xl font-bold text-foreground">
                 {Math.round(cursos.reduce((acc, curso) => acc + curso.progress.percentage, 0) / cursos.length)}%
               </div>
               <p className="text-xs text-muted-foreground">
@@ -155,7 +155,7 @@ export default function MisCursosPage() {
               <CheckCircle className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-cdh-accent">
+              <div className="text-2xl font-bold text-foreground">
                 {cursos.filter(curso => curso.progress.percentage === 100).length}
               </div>
               <p className="text-xs text-muted-foreground">
@@ -171,17 +171,17 @@ export default function MisCursosPage() {
         <Card className="text-center p-12">
           <CardContent>
             <div className="space-y-4">
-              <div className="w-20 h-20 bg-gradient-to-br from-cdh-primary to-cdh-secondary rounded-full mx-auto flex items-center justify-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto flex items-center justify-center">
                 <BookOpen className="h-10 w-10 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-cinzel text-cdh-accent mb-2">
+                <h2 className="text-2xl font-cinzel text-foreground mb-2">
                   Aún no has comprado ningún curso
                 </h2>
                 <p className="text-muted-foreground mb-6 font-courgette">
                   Explora nuestro catálogo y comienza tu aprendizaje
                 </p>
-                <Button asChild className="bg-cdh-primary hover:bg-cdh-primary-dark">
+                <Button asChild className="bg-primary hover:bg-primary/90">
                   <Link href="/cursos" className="flex items-center space-x-2">
                     <ShoppingCart className="h-4 w-4" />
                     <span>Ver Cursos Disponibles</span>
@@ -202,7 +202,7 @@ export default function MisCursosPage() {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <CardTitle className="text-lg font-cinzel text-cdh-accent mb-1">
+                      <CardTitle className="text-lg font-cinzel text-foreground mb-1">
                         {purchase.course.name}
                       </CardTitle>
                       <Badge variant={status.variant} className="w-fit">
@@ -217,7 +217,7 @@ export default function MisCursosPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Progreso</span>
-                      <span className="font-semibold text-cdh-accent">{purchase.progress.percentage}%</span>
+                      <span className="font-semibold text-foreground">{purchase.progress.percentage}%</span>
                     </div>
                     <Progress 
                       value={purchase.progress.percentage} 
@@ -231,13 +231,13 @@ export default function MisCursosPage() {
                   {/* Información del curso */}
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="flex items-center space-x-2">
-                      <Layers className="h-4 w-4 text-cdh-primary" />
+                      <Layers className="h-4 w-4 text-primary" />
                       <span className="text-muted-foreground">
                         {purchase.course.modules.length} módulos
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Book className="h-4 w-4 text-cdh-secondary" />
+                      <Book className="h-4 w-4 text-secondary" />
                       <span className="text-muted-foreground">
                         {purchase.progress.total} lecciones
                       </span>
@@ -256,7 +256,7 @@ export default function MisCursosPage() {
                   </div>
 
                   {/* Botón de acceso */}
-                  <Button asChild className="w-full bg-cdh-primary hover:bg-cdh-primary-dark">
+                  <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg transition-all duration-200">
                     <Link 
                       href={`/cursos/${purchase.course.id}`}
                       className="flex items-center justify-center space-x-2"
