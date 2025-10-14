@@ -2,6 +2,38 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Award,
+  Users,
+  DollarSign,
+  Copy,
+  CheckCircle,
+  Clock,
+  TrendingUp,
+  Share2,
+  Target,
+  Calendar,
+  User,
+  BookOpen,
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  PauseCircle
+} from "lucide-react";
 
 type AffiliateStats = {
   user: {
@@ -122,14 +154,20 @@ export default function AfiliadoPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const badges: { [key: string]: string } = {
-      PENDING: "bg-yellow-100 text-yellow-800",
-      IN_REVIEW: "bg-blue-100 text-blue-800",
-      APPROVED: "bg-green-100 text-green-800",
-      PAID: "bg-purple-100 text-purple-800",
-      DECLINED: "bg-red-100 text-red-800",
-    };
-    return badges[status] || "bg-gray-100 text-gray-800";
+    switch (status) {
+      case "PENDING":
+        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100"><Clock className="h-3 w-3 mr-1" />Pendiente</Badge>;
+      case "IN_REVIEW":
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100"><AlertCircle className="h-3 w-3 mr-1" />En revisión</Badge>;
+      case "APPROVED":
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100"><CheckCircle2 className="h-3 w-3 mr-1" />Aprobado</Badge>;
+      case "PAID":
+        return <Badge className="bg-primary/10 text-primary hover:bg-primary/20"><CheckCircle className="h-3 w-3 mr-1" />Pagado</Badge>;
+      case "DECLINED":
+        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Rechazado</Badge>;
+      default:
+        return <Badge variant="secondary"><PauseCircle className="h-3 w-3 mr-1" />Desconocido</Badge>;
+    }
   };
 
   const formatDate = (date: string) => {
@@ -149,280 +187,483 @@ export default function AfiliadoPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Cargando información de afiliado...</div>
+      <div className="space-y-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center space-y-4">
+            <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+            <Skeleton className="h-4 w-48 mx-auto" />
+            <Skeleton className="h-3 w-32 mx-auto" />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!stats) {
     return (
-      <div className="bg-white rounded-lg shadow p-8 text-center">
-        <p className="text-gray-500">No se pudo cargar la información</p>
-      </div>
+      <Card className="text-center p-8">
+        <CardContent>
+          <div className="space-y-4">
+            <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+              <Award className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">
+                No se pudo cargar la información
+              </h2>
+              <p className="text-muted-foreground">
+                Intenta recargar la página o contacta con soporte
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   // Si NO es afiliado, mostrar opción de solicitud
   if (!stats.user.isAffiliate) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 fade-in">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Programa de Afiliados</h1>
-          <p className="text-gray-600">Gana comisiones por referir nuevos usuarios</p>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Award className="h-6 w-6 text-primary" />
+              <span>Programa de Afiliados</span>
+            </CardTitle>
+            <CardDescription>
+              Gana comisiones por referir nuevos usuarios a nuestra plataforma
+            </CardDescription>
+          </CardHeader>
+        </Card>
 
         {/* Estado de Solicitud */}
         {stats.user.affiliateRequestStatus === "PENDING" ? (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-            <h2 className="text-xl font-bold text-yellow-900 mb-2">Solicitud Pendiente</h2>
-            <p className="text-yellow-800">
-              Tu solicitud para ser afiliado está siendo revisada. Te notificaremos cuando sea aprobada.
-            </p>
-          </div>
+          <Card className="border-yellow-200 bg-yellow-50">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-yellow-900">
+                <Clock className="h-5 w-5" />
+                <span>Solicitud Pendiente</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-yellow-800">
+                Tu solicitud para ser afiliado está siendo revisada. Te notificaremos cuando sea aprobada.
+              </p>
+            </CardContent>
+          </Card>
         ) : stats.user.affiliateRequestStatus === "REJECTED" ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <h2 className="text-xl font-bold text-red-900 mb-2">Solicitud Rechazada</h2>
-            <p className="text-red-800">
-              Tu solicitud para ser afiliado fue rechazada. Por favor, contacta con soporte para más información.
-            </p>
-          </div>
+          <Card className="border-red-200 bg-red-50">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-red-900">
+                <XCircle className="h-5 w-5" />
+                <span>Solicitud Rechazada</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-red-800">
+                Tu solicitud para ser afiliado fue rechazada. Por favor, contacta con soporte para más información.
+              </p>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow p-8 text-white">
-            <h2 className="text-2xl font-bold mb-4">¿Quieres ser Afiliado?</h2>
-            <p className="mb-6 opacity-90">
-              Únete a nuestro programa de afiliados y gana comisiones por cada persona que refiera y realice una compra.
-            </p>
-            <ul className="space-y-2 mb-6">
-              <li className="flex items-center">
-                <span className="mr-2">✓</span> Comisiones por múltiples niveles
-              </li>
-              <li className="flex items-center">
-                <span className="mr-2">✓</span> URL personalizada para compartir
-              </li>
-              <li className="flex items-center">
-                <span className="mr-2">✓</span> Panel de estadísticas en tiempo real
-              </li>
-              <li className="flex items-center">
-                <span className="mr-2">✓</span> Pagos mensuales
-              </li>
-            </ul>
-            <button
-              onClick={requestAffiliate}
-              disabled={requesting}
-              className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors disabled:bg-gray-300"
-            >
-              {requesting ? "Enviando..." : "Solicitar ser Afiliado"}
-            </button>
-          </div>
+          <Card className="overflow-hidden">
+            <div className="bg-gradient-to-br from-primary to-primary/80 p-6 text-primary-foreground">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-cinzel font-bold">¿Quieres ser Afiliado?</h2>
+                <Award className="h-8 w-8 opacity-80" />
+              </div>
+              <p className="mb-6 opacity-90">
+                Únete a nuestro programa de afiliados y gana comisiones por cada persona que refiera y realice una compra.
+              </p>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Comisiones por múltiples niveles
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  URL personalizada para compartir
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Panel de estadísticas en tiempo real
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Pagos mensuales
+                </li>
+              </ul>
+              <Button
+                onClick={requestAffiliate}
+                disabled={requesting}
+                className="bg-white text-primary hover:bg-gray-100"
+              >
+                {requesting ? (
+                  <>
+                    <Clock className="h-4 w-4 mr-2" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <Target className="h-4 w-4 mr-2" />
+                    Solicitar ser Afiliado
+                  </>
+                )}
+              </Button>
+            </div>
+          </Card>
         )}
 
         {/* Beneficios */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Beneficios del Programa</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">💰 Comisiones Generosas</h3>
-              <p className="text-sm text-gray-600">
-                Gana hasta un 10% de comisión por cada venta generada a través de tu enlace.
-              </p>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              <span>Beneficios del Programa</span>
+            </CardTitle>
+            <CardDescription>
+              Descubre todas las ventajas de ser parte de nuestro programa de afiliados
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <DollarSign className="h-5 w-5 text-primary" />
+                    <h3 className="font-semibold text-foreground">Comisiones Generosas</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Gana hasta un 10% de comisión por cada venta generada a través de tu enlace.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <TrendingUp className="h-5 w-5 text-secondary" />
+                    <h3 className="font-semibold text-foreground">Panel de Control</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Accede a estadísticas detalladas de tus referidos y comisiones en tiempo real.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Share2 className="h-5 w-5 text-primary" />
+                    <h3 className="font-semibold text-foreground">URL Personalizada</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Obtén un enlace único y fácil de compartir en redes sociales y otros canales.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <h3 className="font-semibold text-foreground">Pagos Puntuales</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Recibe tus comisiones mensualmente a través del método de pago de tu preferencia.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">📊 Panel de Control</h3>
-              <p className="text-sm text-gray-600">
-                Accede a estadísticas detalladas de tus referidos y comisiones en tiempo real.
-              </p>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">🔗 URL Personalizada</h3>
-              <p className="text-sm text-gray-600">
-                Obtén un enlace único y fácil de compartir en redes sociales y otros canales.
-              </p>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">💸 Pagos Puntuales</h3>
-              <p className="text-sm text-gray-600">
-                Recibe tus comisiones mensualmente a través del método de pago de tu preferencia.
-              </p>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   // Si ES afiliado, mostrar dashboard completo
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-in">
       {/* Header */}
-      <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2">Panel de Afiliado</h1>
-        <p className="opacity-90">Gestiona tus referidos y comisiones</p>
-      </div>
+      <Card className="overflow-hidden">
+        <div className="bg-gradient-to-br from-primary to-primary/80 p-6 text-primary-foreground">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-cinzel font-bold mb-2">Panel de Afiliado</h1>
+              <p className="opacity-90">Gestiona tus referidos y comisiones</p>
+            </div>
+            <Award className="h-12 w-12 opacity-80" />
+          </div>
+        </div>
+      </Card>
 
       {/* URL de Referido */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Tu Enlace de Referido</h2>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={stats.user.referralUrl || "No disponible"}
-            readOnly
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900"
-          />
-          <button
-            onClick={copyToClipboard}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            {copied ? "✓ Copiado" : "Copiar"}
-          </button>
-        </div>
-        <p className="text-sm text-gray-600 mt-2">
-          Comparte este enlace y gana comisiones por cada compra realizada
-        </p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Share2 className="h-5 w-5 text-primary" />
+            <span>Tu Enlace de Referido</span>
+          </CardTitle>
+          <CardDescription>
+            Comparte este enlace y gana comisiones por cada compra realizada
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <Input
+              value={stats.user.referralUrl || "No disponible"}
+              readOnly
+              className="flex-1"
+            />
+            <Button
+              onClick={copyToClipboard}
+              className="bg-primary hover:bg-primary/90"
+            >
+              {copied ? (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Copiado
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copiar
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Métricas de Comisiones */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Comisiones Pendientes</p>
-          <p className="text-3xl font-bold text-yellow-600 mt-2">
-            {formatCurrency(stats.commissions.pending.amount)}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">{stats.commissions.pending.count} comisiones</p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Comisiones Pendientes
+            </CardTitle>
+            <Clock className="h-4 w-4 text-yellow-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-600">
+              {formatCurrency(stats.commissions.pending.amount)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {stats.commissions.pending.count} comisiones
+            </p>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Comisiones Aprobadas</p>
-          <p className="text-3xl font-bold text-green-600 mt-2">
-            {formatCurrency(stats.commissions.approved.amount)}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">{stats.commissions.approved.count} comisiones</p>
-        </div>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Comisiones Aprobadas
+            </CardTitle>
+            <CheckCircle2 className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {formatCurrency(stats.commissions.approved.amount)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {stats.commissions.approved.count} comisiones
+            </p>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Comisiones Pagadas</p>
-          <p className="text-3xl font-bold text-purple-600 mt-2">
-            {formatCurrency(stats.commissions.paid.amount)}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">{stats.commissions.paid.count} comisiones</p>
-        </div>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Comisiones Pagadas
+            </CardTitle>
+            <CheckCircle className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">
+              {formatCurrency(stats.commissions.paid.amount)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {stats.commissions.paid.count} comisiones
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Resumen General */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Resumen General</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="border-l-4 border-purple-500 pl-4">
-            <p className="text-sm text-gray-600">Total Referidos</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.overview.totalReferrals}</p>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            <span>Resumen General</span>
+          </CardTitle>
+          <CardDescription>
+            Estadísticas generales de tu programa de afiliados
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <div className="border-l-4 border-primary pl-4">
+              <div className="flex items-center space-x-2 mb-1">
+                <Users className="h-4 w-4 text-primary" />
+                <p className="text-sm text-muted-foreground">Total Referidos</p>
+              </div>
+              <p className="text-2xl font-bold text-foreground">{stats.overview.totalReferrals}</p>
+            </div>
+            <div className="border-l-4 border-green-500 pl-4">
+              <div className="flex items-center space-x-2 mb-1">
+                <DollarSign className="h-4 w-4 text-green-500" />
+                <p className="text-sm text-muted-foreground">Total Comisiones Generadas</p>
+              </div>
+              <p className="text-2xl font-bold text-foreground">
+                {formatCurrency(stats.overview.totalCommissionsGenerated)}
+              </p>
+            </div>
+            <div className="border-l-4 border-secondary pl-4">
+              <div className="flex items-center space-x-2 mb-1">
+                <Award className="h-4 w-4 text-secondary" />
+                <p className="text-sm text-muted-foreground">Número de Comisiones</p>
+              </div>
+              <p className="text-2xl font-bold text-foreground">{stats.overview.totalCommissionsCount}</p>
+            </div>
           </div>
-          <div className="border-l-4 border-green-500 pl-4">
-            <p className="text-sm text-gray-600">Total Comisiones Generadas</p>
-            <p className="text-2xl font-bold text-gray-900">
-              {formatCurrency(stats.overview.totalCommissionsGenerated)}
-            </p>
-          </div>
-          <div className="border-l-4 border-blue-500 pl-4">
-            <p className="text-sm text-gray-600">Número de Comisiones</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.overview.totalCommissionsCount}</p>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Referidos Directos */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Mis Referidos</h2>
-        </div>
-        <div className="p-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Users className="h-5 w-5 text-primary" />
+            <span>Mis Referidos</span>
+          </CardTitle>
+          <CardDescription>
+            Lista de usuarios que se registraron a través de tu enlace
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           {stats.referrals.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500">Aún no has referido a ningún usuario</p>
-              <p className="text-sm text-gray-400 mt-2">Comparte tu enlace para comenzar a ganar comisiones</p>
+              <div className="space-y-4">
+                <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+                  <Users className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground mb-2">
+                    Aún no has referido a ningún usuario
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Comparte tu enlace para comenzar a ganar comisiones
+                  </p>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Usuario</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Email</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Tipo</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Fecha</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Compras</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Usuario</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead>Compras</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {stats.referrals.map((referral) => (
-                    <tr key={referral.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900">{referral.name || "Sin nombre"}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{referral.email}</td>
-                      <td className="px-4 py-3 text-sm">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          referral.userType === "CUSTOMER" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
-                        }`}>
+                    <TableRow key={referral.id} className="hover:bg-muted/50">
+                      <TableCell className="font-medium">{referral.name || "Sin nombre"}</TableCell>
+                      <TableCell>{referral.email}</TableCell>
+                      <TableCell>
+                        <Badge variant={referral.userType === "CUSTOMER" ? "default" : "secondary"}>
                           {referral.userType === "CUSTOMER" ? "Cliente" : "Invitado"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{formatDate(referral.joinedAt)}</td>
-                      <td className="px-4 py-3 text-sm font-semibold text-gray-900">{referral.totalPurchases}</td>
-                    </tr>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>{formatDate(referral.joinedAt)}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-semibold">{referral.totalPurchases}</TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Historial de Comisiones */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Historial de Comisiones</h2>
-        </div>
-        <div className="p-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <DollarSign className="h-5 w-5 text-primary" />
+            <span>Historial de Comisiones</span>
+          </CardTitle>
+          <CardDescription>
+            Registro detallado de todas tus comisiones
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           {stats.recentCommissions.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500">No tienes comisiones registradas</p>
+              <div className="space-y-4">
+                <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+                  <DollarSign className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground mb-2">
+                    No tienes comisiones registradas
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Las comisiones aparecerán aquí cuando tus referidos realicen compras
+                  </p>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Fecha</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Comprador</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Curso</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Nivel</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Monto</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Estado</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead>Comprador</TableHead>
+                    <TableHead>Curso</TableHead>
+                    <TableHead>Nivel</TableHead>
+                    <TableHead>Monto</TableHead>
+                    <TableHead>Estado</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {stats.recentCommissions.map((commission) => (
-                    <tr key={commission.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-600">{formatDate(commission.createdAt)}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{commission.buyer.name || "Sin nombre"}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{commission.course.name}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">Nivel {commission.level}</td>
-                      <td className="px-4 py-3 text-sm font-semibold text-gray-900">
+                    <TableRow key={commission.id} className="hover:bg-muted/50">
+                      <TableCell>
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>{formatDate(commission.createdAt)}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium">{commission.buyer.name || "Sin nombre"}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <BookOpen className="h-4 w-4 text-primary" />
+                          <span>{commission.course.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>Nivel {commission.level}</TableCell>
+                      <TableCell className="font-semibold text-primary">
                         {formatCurrency(commission.amount)}
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(commission.status)}`}>
-                          {commission.status}
-                        </span>
-                      </td>
-                    </tr>
+                      </TableCell>
+                      <TableCell>{getStatusBadge(commission.status)}</TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

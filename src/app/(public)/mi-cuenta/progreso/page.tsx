@@ -2,6 +2,24 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
+import {
+  BarChart3,
+  BookOpen,
+  Clock,
+  CheckCircle,
+  PlayCircle,
+  TrendingUp,
+  Calendar,
+  Book,
+  Target,
+  Award,
+  Timer
+} from "lucide-react";
 
 type ProgressStats = {
   overview: {
@@ -75,182 +93,292 @@ export default function ProgresoPage() {
     });
   };
 
+  const getProgressColor = (percentage: number) => {
+    if (percentage === 100) return "text-green-600";
+    if (percentage >= 50) return "text-primary";
+    if (percentage > 0) return "text-secondary";
+    return "text-muted-foreground";
+  };
+
+  const getProgressBadge = (isCompleted: boolean, isActive: boolean) => {
+    if (isCompleted) {
+      return <Badge className="bg-green-100 text-green-800 hover:bg-green-100"><CheckCircle className="h-3 w-3 mr-1" />Completado</Badge>;
+    }
+    if (isActive) {
+      return <Badge className="bg-primary/10 text-primary hover:bg-primary/20"><PlayCircle className="h-3 w-3 mr-1" />En progreso</Badge>;
+    }
+    return <Badge variant="secondary"><Target className="h-3 w-3 mr-1" />No iniciado</Badge>;
+  };
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Cargando estadísticas...</div>
+      <div className="space-y-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center space-y-4">
+            <Skeleton className="h-12 w-12 rounded-full mx-auto" />
+            <Skeleton className="h-4 w-48 mx-auto" />
+            <Skeleton className="h-3 w-32 mx-auto" />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!stats) {
     return (
-      <div className="bg-white rounded-lg shadow p-8 text-center">
-        <p className="text-gray-500">No se pudieron cargar las estadísticas</p>
-      </div>
+      <Card className="text-center p-8">
+        <CardContent>
+          <div className="space-y-4">
+            <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+              <BarChart3 className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">
+                No se pudieron cargar las estadísticas
+              </h2>
+              <p className="text-muted-foreground">
+                Intenta recargar la página o contacta con soporte
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 fade-in">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Mi Progreso</h1>
-        <p className="text-gray-600">Seguimiento de tu aprendizaje</p>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <BarChart3 className="h-6 w-6 text-primary" />
+            <span>Mi Progreso</span>
+          </CardTitle>
+          <CardDescription>
+            Seguimiento detallado de tu aprendizaje y desarrollo
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
       {/* Métricas Principales */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow p-6 text-white">
-          <p className="text-sm opacity-90 font-medium">Progreso Global</p>
-          <p className="text-4xl font-bold mt-2">{stats.overview.globalProgressPercentage}%</p>
-          <p className="text-sm mt-1 opacity-75">
-            {stats.overview.completedLessons} de {stats.overview.totalLessons} lecciones
-          </p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <Card className="overflow-hidden">
+          <div className="bg-gradient-to-br from-primary to-primary/80 p-6 text-primary-foreground">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm opacity-90 font-medium">Progreso Global</p>
+                <p className="text-3xl font-bold mt-2">{stats.overview.globalProgressPercentage}%</p>
+                <p className="text-xs mt-1 opacity-75">
+                  {stats.overview.completedLessons} de {stats.overview.totalLessons} lecciones
+                </p>
+              </div>
+              <TrendingUp className="h-8 w-8 opacity-80" />
+            </div>
+          </div>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Cursos Activos</p>
-          <p className="text-4xl font-bold text-gray-900 mt-2">{stats.overview.activeCourses}</p>
-          <p className="text-sm text-gray-500 mt-1">En progreso</p>
-        </div>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Cursos Activos
+            </CardTitle>
+            <PlayCircle className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{stats.overview.activeCourses}</div>
+            <p className="text-xs text-muted-foreground">
+              En progreso actualmente
+            </p>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Cursos Completados</p>
-          <p className="text-4xl font-bold text-green-600 mt-2">{stats.overview.completedCourses}</p>
-          <p className="text-sm text-gray-500 mt-1">Finalizados</p>
-        </div>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Cursos Completados
+            </CardTitle>
+            <Award className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{stats.overview.completedCourses}</div>
+            <p className="text-xs text-muted-foreground">
+              Finalizados exitosamente
+            </p>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 font-medium">Tiempo de Estudio</p>
-          <p className="text-4xl font-bold text-gray-900 mt-2">
-            {formatTime(stats.overview.totalStudyTimeSeconds)}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">Total acumulado</p>
-        </div>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Tiempo de Estudio
+            </CardTitle>
+            <Timer className="h-4 w-4 text-secondary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">
+              {formatTime(stats.overview.totalStudyTimeSeconds)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Total acumulado
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Últimas Lecciones Vistas */}
       {stats.recentLessons.length > 0 && (
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">Últimas Lecciones Vistas</h2>
-          </div>
-          <div className="p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Clock className="h-5 w-5 text-primary" />
+              <span>Últimas Lecciones Vistas</span>
+            </CardTitle>
+            <CardDescription>
+              Tu actividad de aprendizaje reciente
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             <div className="space-y-3">
               {stats.recentLessons.map((lesson) => (
-                <Link
-                  key={lesson.lessonId}
-                  href={`/cursos/${lesson.courseId}/leccion/${lesson.lessonId}`}
-                  className="flex items-start justify-between p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors group"
-                >
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900 group-hover:text-blue-600">
-                      {lesson.lessonName}
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {lesson.courseName} • {lesson.moduleName}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Visto {formatDate(lesson.lastViewed)}
-                    </p>
-                  </div>
-                  <div className="ml-4">
-                    {lesson.isCompleted ? (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        ✓ Completada
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        En progreso
-                      </span>
-                    )}
-                  </div>
-                </Link>
+                <Card key={lesson.lessonId} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <Link
+                      href={`/cursos/${lesson.courseId}/leccion/${lesson.lessonId}`}
+                      className="flex items-start justify-between group"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Book className="h-4 w-4 text-primary" />
+                          <h3 className="font-medium text-foreground group-hover:text-primary transition-colors">
+                            {lesson.lessonName}
+                          </h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          {lesson.courseName} • {lesson.moduleName}
+                        </p>
+                        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          <span>Visto {formatDate(lesson.lastViewed)}</span>
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        {lesson.isCompleted ? (
+                          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Completada
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                            <PlayCircle className="h-3 w-3 mr-1" />
+                            En progreso
+                          </Badge>
+                        )}
+                      </div>
+                    </Link>
+                  </CardContent>
+                </Card>
               ))}
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Progreso por Curso */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-bold text-gray-900">Progreso por Curso</h2>
-        </div>
-        <div className="p-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <BookOpen className="h-5 w-5 text-primary" />
+            <span>Progreso por Curso</span>
+          </CardTitle>
+          <CardDescription>
+            Detalle del avance en cada curso
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           {stats.courses.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500 mb-4">Aún no has comprado ningún curso</p>
-              <Link
-                href="/cursos"
-                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Explorar Cursos
-              </Link>
+              <div className="space-y-4">
+                <div className="w-20 h-20 bg-muted rounded-full mx-auto flex items-center justify-center">
+                  <BookOpen className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground mb-2">
+                    Aún no has comprado ningún curso
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    Explora nuestro catálogo y comienza tu aprendizaje
+                  </p>
+                  <Button asChild className="bg-primary hover:bg-primary/90">
+                    <Link href="/cursos" className="flex items-center space-x-2">
+                      <BookOpen className="h-4 w-4" />
+                      <span>Explorar Cursos</span>
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
               {stats.courses.map((course) => (
-                <div
-                  key={course.courseId}
-                  className="border border-gray-200 rounded-lg p-4 hover:border-blue-500 transition-colors"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">{course.courseName}</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {course.completedLessons} de {course.totalLessons} lecciones completadas
-                      </p>
+                <Card key={course.courseId} className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="font-cinzel text-lg font-semibold text-foreground mb-1">{course.courseName}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {course.completedLessons} de {course.totalLessons} lecciones completadas
+                        </p>
+                      </div>
+                      <div className="ml-4">
+                        {getProgressBadge(course.isCompleted, course.isActive)}
+                      </div>
                     </div>
-                    <div className="ml-4">
-                      {course.isCompleted ? (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                          ✓ Completado
+
+                    {/* Barra de Progreso */}
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Progreso</span>
+                        <span className={`font-semibold ${getProgressColor(course.progressPercentage)}`}>
+                          {course.progressPercentage}%
                         </span>
-                      ) : course.isActive ? (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                          En progreso
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                          No iniciado
-                        </span>
-                      )}
+                      </div>
+                      <Progress
+                        value={course.progressPercentage}
+                        className="h-2"
+                      />
                     </div>
-                  </div>
 
-                  {/* Barra de Progreso */}
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                    <div
-                      className={`h-full transition-all duration-300 ${
-                        course.isCompleted
-                          ? "bg-green-500"
-                          : course.isActive
-                          ? "bg-blue-500"
-                          : "bg-gray-400"
-                      }`}
-                      style={{ width: `${course.progressPercentage}%` }}
-                    />
-                  </div>
-                  <p className="text-right text-sm text-gray-600 mt-1">
-                    {course.progressPercentage}%
-                  </p>
-
-                  <div className="mt-3 flex gap-2">
-                    <Link
-                      href={`/cursos/${course.courseId}`}
-                      className="flex-1 text-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                    >
-                      {course.isActive ? "Continuar" : "Comenzar"}
-                    </Link>
-                  </div>
-                </div>
+                    <Button asChild className="w-full bg-primary hover:bg-primary/90">
+                      <Link
+                        href={`/cursos/${course.courseId}`}
+                        className="flex items-center justify-center space-x-2"
+                      >
+                        {course.isCompleted ? (
+                          <>
+                            <CheckCircle className="h-4 w-4" />
+                            <span>Revisar Curso</span>
+                          </>
+                        ) : course.isActive ? (
+                          <>
+                            <PlayCircle className="h-4 w-4" />
+                            <span>Continuar Curso</span>
+                          </>
+                        ) : (
+                          <>
+                            <Target className="h-4 w-4" />
+                            <span>Comenzar Curso</span>
+                          </>
+                        )}
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

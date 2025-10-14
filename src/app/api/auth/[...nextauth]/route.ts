@@ -17,6 +17,11 @@ export const authOptions = {
       from: process.env.EMAIL_FROM,
     }),
   ],
+  pages: {
+    signIn: '/auth/signin',
+    verifyRequest: '/auth/verify-request',
+    error: '/auth/error',
+  },
   events: {
     createUser: async (message: any) => {
       /* inicio lógica de asignación de patrocinador */
