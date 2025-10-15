@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 
 // Endpoint GET para autenticar directamente al usuario demo
 export async function GET(request: NextRequest) {
   try {
+    // Verificar si la base de datos está configurada
+    const hasDatabase = !!process.env.DATABASE_URL;
+    
+    if (!hasDatabase) {
+      // Si no hay base de datos, redirigir a una página de información
+      return NextResponse.redirect(new URL('/demo-info', request.url));
+    }
+
+    // Si hay base de datos, usar la lógica original
+    const { prisma } = await import("@/lib/prisma");
+    
     // 1. Buscar o crear usuario demo
     let demoUser = await prisma.user.findUnique({
       where: { email: "demo@cdh.com" },
@@ -54,7 +64,7 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (error) {
     console.error("Error en demo auth:", error);
-    return NextResponse.redirect(new URL('/api/auth/signin', request.url));
+    return NextResponse.redirect(new URL('/demo-info', request.url));
   }
 }
 
