@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function DemoLoginPage() {
   const [password, setPassword] = useState("");
@@ -86,12 +87,12 @@ export default function DemoLoginPage() {
         </div>
 
         <div className="mt-4 text-center">
-          <a
+          <Link
             href="/api/auth/signin"
             className="text-sm text-gray-600 hover:text-gray-900"
           >
             ← Volver al login normal
-          </a>
+          </Link>
         </div>
       </div>
     </div>
