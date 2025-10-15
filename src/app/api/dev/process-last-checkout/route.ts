@@ -6,10 +6,21 @@ import Stripe from 'stripe';
 import { calculateAndRecordCommissions } from '@/lib/server/commissions';
 import { prisma } from '@/lib/prisma';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Configuración temporal para permitir deployment
+const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 export async function GET(request: NextRequest) {
   try {
+    // Verificar si Stripe está configurado
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Stripe no está configurado. Configura STRIPE_SECRET_KEY en las variables de entorno.' },
+        { status: 500 }
+      );
+    }
+    
     console.log('🔧 [DEV] Buscando últimas sesiones de checkout...');
     
     // Obtener las últimas sesiones de checkout

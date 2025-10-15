@@ -5,11 +5,22 @@ import Stripe from 'stripe';
 import { calculateAndRecordCommissions } from '@/lib/server/commissions';
 import { prisma } from '@/lib/prisma';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Configuración temporal para permitir deployment
+const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 export async function POST(request: NextRequest) {
   console.log('--- Inició el procesamiento del Webhook ---');
   try {
+    // Verificar si Stripe está configurado
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Stripe no está configurado. Configura STRIPE_SECRET_KEY en las variables de entorno.' },
+        { status: 500 }
+      );
+    }
+    
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!webhookSecret) {
       throw new Error('STRIPE_WEBHOOK_SECRET no está configurada.');

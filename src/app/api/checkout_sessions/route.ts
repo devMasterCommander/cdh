@@ -6,12 +6,23 @@ import { authOptions } from '../auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-});
+// Configuración temporal para permitir deployment
+const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-06-20',
+    })
+  : null;
 
 export async function POST(request: NextRequest) {
   /* inicio ejecución lógica */
+  
+  // Verificar si Stripe está configurado
+  if (!stripe) {
+    return NextResponse.json(
+      { error: 'Stripe no está configurado. Configura STRIPE_SECRET_KEY en las variables de entorno.' },
+      { status: 500 }
+    );
+  }
   
   // Verificar si hay sesión (opcional, permite compras sin login)
   const session = await getServerSession(authOptions);
