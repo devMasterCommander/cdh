@@ -1,43 +1,93 @@
-# 🎓 CDH - Plataforma de Cursos Online
+# 🎓 CDH - Centro de Desarrollo Humano
 
-Sistema de gestión de aprendizaje (LMS) construido con Next.js, Prisma, Supabase, NextAuth y Stripe.
+Plataforma de aprendizaje online con sistema de afiliados, construida con Next.js 15, Prisma, PostgreSQL, NextAuth y Stripe.
+
+## 🚀 Estado Actual del Proyecto
+
+- ✅ **Versión**: v1.0.0-stable
+- ✅ **Funcionalidades**: Completas y operativas
+- ✅ **Menú responsive**: Implementado en admin y usuario
+- ✅ **Sistema de afiliados**: Funcional con comisiones automáticas
+- ✅ **Reproductor de video**: Vimeo integrado con progreso
+- ✅ **Pagos**: Stripe configurado y operativo
+- ✅ **Autenticación**: NextAuth con Google OAuth
+
+## 🏗️ Arquitectura del Proyecto
+
+### **Stack Tecnológico**
+- **Framework**: Next.js 15 con Turbopack
+- **Base de Datos**: PostgreSQL + Prisma ORM
+- **Autenticación**: NextAuth.js
+- **Pagos**: Stripe
+- **Videos**: Vimeo Player
+- **Estilos**: Tailwind CSS + shadcn/ui
+- **UI Components**: Radix UI
+
+### **Estructura Actual**
+```
+cdh/
+├── src/
+│   ├── app/
+│   │   ├── (public)/          # Páginas públicas
+│   │   │   ├── cursos/        # Catálogo de cursos
+│   │   │   ├── mi-cuenta/     # Dashboard de usuario
+│   │   │   └── curso/         # Página de curso
+│   │   ├── admin/             # Panel de administración
+│   │   │   ├── cursos/        # Gestión de cursos
+│   │   │   ├── usuarios/      # Gestión de usuarios
+│   │   │   ├── afiliados/     # Gestión de afiliados
+│   │   │   └── transacciones/ # Gestión de pagos
+│   │   ├── api/               # API Routes
+│   │   │   ├── auth/          # NextAuth endpoints
+│   │   │   ├── checkout_sessions/
+│   │   │   ├── progress/      # Progreso de lecciones
+│   │   │   └── webhooks/      # Stripe webhooks
+│   │   ├── auth/              # Páginas de autenticación
+│   │   └── page.tsx           # Landing page
+│   ├── components/
+│   │   ├── ui/                # Componentes UI (shadcn/ui)
+│   │   ├── VideoPlayer.tsx    # Reproductor de Vimeo
+│   │   └── BuyButton.tsx      # Botón de compra
+│   ├── lib/
+│   │   ├── prisma.ts          # Cliente de Prisma
+│   │   ├── utils.ts           # Utilidades
+│   │   └── api-client.ts      # Cliente API (para arquitectura desacoplada)
+│   └── hooks/
+│       └── use-mobile.ts      # Hook para detección móvil
+├── prisma/
+│   └── schema.prisma          # Esquema de base de datos
+├── scripts/
+│   └── split-project.js       # Script para separar backend/frontend
+├── projects_docs/             # Documentación del proyecto
+└── package.json
+```
 
 ## 🚀 Inicio Rápido
 
-> ⚠️ **IMPORTANTE:** Si el proyecto ha estado inactivo, lee la **[Guía de Reactivación](./REACTIVACION.md)** primero.
+### **Requisitos Previos**
+- Node.js 18+
+- PostgreSQL (Supabase recomendado)
+- Cuenta de Stripe
+- Credenciales de Google OAuth
+- Token de Vimeo
 
-### Requisitos Previos
-
-- Node.js 18+ 
-- Cuenta de Supabase (PostgreSQL)
-- Cuenta de Stripe (para pagos)
-- Credenciales de Google OAuth (para autenticación)
-
-### Stack Tecnológico
-
-- **Framework:** Next.js 15
-- **Base de Datos:** PostgreSQL (Supabase) + Prisma ORM
-- **Autenticación:** NextAuth.js
-- **Pagos:** Stripe
-- **Videos:** Vimeo Player
-- **Estilos:** Tailwind CSS
-
-## 📋 Configuración Inicial
-
-### 1. Instalar Dependencias
-
+### **1. Instalación**
 ```bash
+# Clonar el repositorio
+git clone https://github.com/devMasterCommander/cdh.git
+cd cdh
+
+# Instalar dependencias
 npm install
 ```
 
-### 2. Configurar Variables de Entorno
-
-Crea un archivo `.env.local` en la raíz del proyecto con las siguientes variables:
+### **2. Configuración de Variables de Entorno**
+Crea un archivo `.env.local` en la raíz del proyecto:
 
 ```env
-# BASE DE DATOS (Supabase)
-DATABASE_URL="postgresql://postgres:password@host:5432/postgres"
-DIRECT_URL="postgresql://postgres:password@host:5432/postgres"
+# BASE DE DATOS
+DATABASE_URL="postgresql://usuario:password@host:5432/postgres"
+DIRECT_URL="postgresql://usuario:password@host:5432/postgres"
 
 # NEXTAUTH
 NEXTAUTH_SECRET="genera-con-openssl-rand-base64-32"
@@ -52,154 +102,149 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
 STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 
-# EMAIL (opcional)
-EMAIL_SERVER_USER="tu-email@gmail.com"
-EMAIL_SERVER_PASSWORD="tu-app-password"
-EMAIL_SERVER_HOST="smtp.gmail.com"
-EMAIL_SERVER_PORT="587"
-EMAIL_FROM="tu-email@gmail.com"
-
-# VIMEO (opcional)
+# VIMEO
 VIMEO_ACCESS_TOKEN="tu-token"
 ```
 
-### 3. Configurar Base de Datos
-
+### **3. Configurar Base de Datos**
 ```bash
-# Sincronizar el esquema de Prisma con la base de datos
+# Sincronizar esquema
 npx prisma db push
 
-# Generar el cliente de Prisma
+# Generar cliente
 npx prisma generate
 
-# (Opcional) Abrir Prisma Studio para gestionar datos
+# (Opcional) Abrir Prisma Studio
 npx prisma studio
 ```
 
-### 4. Iniciar el Servidor de Desarrollo
-
+### **4. Iniciar Desarrollo**
 ```bash
 npm run dev
 ```
 
 Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-## 📁 Estructura del Proyecto
+## 🎯 Funcionalidades Principales
 
-```
-cdh/
-├── prisma/
-│   └── schema.prisma        # Esquema de base de datos
-├── src/
-│   ├── app/
-│   │   ├── api/             # API Routes
-│   │   │   ├── auth/        # NextAuth endpoints
-│   │   │   ├── checkout_sessions/
-│   │   │   ├── progress/    # Progreso de lecciones
-│   │   │   └── webhooks/    # Stripe webhooks
-│   │   ├── curso/           # Página de curso
-│   │   ├── cursos/          # Páginas dinámicas de cursos
-│   │   │   └── [courseId]/
-│   │   │       ├── leccion/
-│   │   │       │   └── [lessonId]/
-│   │   │       └── page.tsx
-│   │   ├── layout.tsx       # Layout principal
-│   │   └── page.tsx         # Página de inicio
-│   ├── components/
-│   │   └── VideoPlayer.tsx  # Reproductor de Vimeo
-│   ├── lib/
-│   │   ├── prisma.ts        # Cliente de Prisma
-│   │   └── server/
-│   │       └── commissions.ts
-│   └── middleware.ts        # Middleware de autenticación
-├── .env.local               # Variables de entorno (crear)
-└── package.json
-```
+### **👥 Sistema de Usuarios**
+- **Tipos**: Guest, Customer, Affiliate, Admin
+- **Autenticación**: Google OAuth + Magic Links
+- **Perfiles**: Gestión completa de datos personales
+- **Afiliados**: Sistema de referidos con comisiones
 
-## 🗄️ Modelos de Base de Datos
+### **📚 Gestión de Cursos**
+- **Estructura**: Cursos → Módulos → Lecciones
+- **Videos**: Integración con Vimeo
+- **Progreso**: Seguimiento automático de visualización
+- **Compras**: Integración con Stripe
 
-### Principales Entidades
+### **💰 Sistema de Afiliados**
+- **Referidos**: URLs personalizadas (`/ref/slug`)
+- **Comisiones**: Cálculo automático al comprar
+- **Estados**: Pending, Approved, Declined, Paid
+- **Pagos**: Gestión desde panel de admin
 
-- **User:** Usuarios del sistema con sistema de afiliados
-- **Course:** Cursos disponibles
-- **Module:** Módulos de cada curso
-- **Lesson:** Lecciones con videos de Vimeo
-- **LessonProgress:** Progreso de usuarios en lecciones
-- **Purchase:** Compras realizadas (vinculadas a Stripe)
-- **Commission:** Comisiones de afiliados
-- **Account/Session:** Tablas de NextAuth
+### **🖥️ Panel de Administración**
+- **Gestión de cursos**: CRUD completo
+- **Gestión de usuarios**: Asignación de patrocinadores
+- **Gestión de afiliados**: Aprobación y pagos
+- **Transacciones**: Seguimiento de pagos
+- **Responsive**: Menú lateral colapsable
 
 ## 🔧 Comandos Útiles
 
 ```bash
 # Desarrollo
-npm run dev          # Iniciar servidor de desarrollo con Turbopack
+npm run dev          # Servidor de desarrollo (Turbopack)
 npm run build        # Construir para producción
-npm run start        # Iniciar servidor de producción
+npm run start        # Servidor de producción
 npm run lint         # Ejecutar linter
 
 # Prisma
-npx prisma studio    # Abrir interfaz visual de base de datos
-npx prisma generate  # Generar cliente de Prisma
-npx prisma db push   # Sincronizar esquema (desarrollo)
-npx prisma migrate dev  # Crear migración (recomendado)
-npx prisma db pull   # Actualizar esquema desde BD existente
+npx prisma studio    # Interfaz visual de BD
+npx prisma generate  # Generar cliente
+npx prisma db push   # Sincronizar esquema
+npx prisma migrate dev  # Crear migración
+
+# Demo
+npm run setup:demo   # Configurar usuario demo
+npm run demo:session # Crear sesión demo
 ```
 
-## 🔐 Autenticación
+## 🏗️ Arquitectura Desacoplada (Futuro)
 
-Este proyecto usa **NextAuth.js** con soporte para:
-- Google OAuth
-- Magic Links por email (opcional)
+El proyecto está preparado para una arquitectura desacoplada:
 
-Los usuarios pueden tener patrocinadores (sistema de afiliados de varios niveles).
+- **Backend (VPS)**: API + Admin Panel
+- **Frontend (Vercel)**: UI pública + Dashboard usuario
+- **Beneficios**: Control total, costos reducidos (~€5-15/mes vs €50-200/mes)
 
-## 💳 Sistema de Pagos
+Para implementar:
+```bash
+node scripts/split-project.js
+```
 
-Integración con **Stripe** para:
-- Checkout de cursos
-- Webhooks para confirmar pagos
-- Generación automática de comisiones por afiliados
+## 🧪 Usuario Demo
 
-## 📹 Sistema de Videos
+Para pruebas rápidas:
+- **Email**: demo@cdh.com
+- **Acceso**: [http://localhost:3000/demo-login](http://localhost:3000/demo-login)
 
-- Reproductor de Vimeo integrado
-- Guardado automático del progreso (timestamp)
-- Marcado de lecciones como completadas
+## 📊 Modelos de Base de Datos
+
+### **Entidades Principales**
+- **User**: Usuarios con sistema de afiliados
+- **Course/Module/Lesson**: Estructura de cursos
+- **LessonProgress**: Progreso de usuarios
+- **Purchase**: Compras (vinculadas a Stripe)
+- **Commission**: Comisiones de afiliados
+- **Account/Session**: NextAuth
+
+### **Enums**
+- **UserType**: GUEST, CUSTOMER, AFFILIATE, ADMIN
+- **CommissionStatus**: PENDING, APPROVED, DECLINED, PAID
+- **AffiliateRequestStatus**: NONE, PENDING, APPROVED, REJECTED
 
 ## 🚨 Solución de Problemas
 
-### Supabase pausado o inactivo
-
-Ver **[REACTIVACION.md](./REACTIVACION.md)** para instrucciones detalladas.
-
-### Error: "Can't reach database server"
+### **Base de datos inactiva**
 ```bash
-# Verifica que Supabase esté activo
-# Verifica DATABASE_URL en .env.local
-```
-
-### Error: "Table does not exist"
-```bash
+# Verificar conexión
 npx prisma db push
 npx prisma generate
 ```
 
-### Error de autenticación
+### **Error de autenticación**
 ```bash
-# Regenera el NEXTAUTH_SECRET
+# Regenerar secret
 openssl rand -base64 32
 ```
 
-## 📚 Recursos
+### **Problemas de build**
+```bash
+# Limpiar caché
+rm -rf .next
+npm run build
+```
 
-- [Guía de Reactivación](./REACTIVACION.md)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Prisma Documentation](https://www.prisma.io/docs)
-- [NextAuth Documentation](https://next-auth.js.org/)
-- [Stripe Documentation](https://stripe.com/docs)
-- [Supabase Documentation](https://supabase.com/docs)
+## 📚 Documentación
+
+- **Documentación completa**: `projects_docs/`
+- **Arquitectura**: `projects_docs/ARCHITECTURE-PLAN.md`
+- **Configuración Backend**: `projects_docs/BACKEND-ENV.md`
+- **Configuración Frontend**: `projects_docs/FRONTEND-ENV.md`
+
+## 🔄 Deploy
+
+### **Desarrollo**
+- **Local**: `npm run dev`
+- **Staging**: Rama `staging` → Vercel
+
+### **Producción**
+- **Monolítico**: Deploy completo en Vercel
+- **Desacoplado**: Backend en VPS + Frontend en Vercel
 
 ## 📄 Licencia
 
-Proyecto privado.
+Proyecto privado - Centro de Desarrollo Humano
