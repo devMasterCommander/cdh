@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "setup:demo": "node setup-demo.js",
-    "demo:session": "node setup-demo-session.js"
+    "demo:session": "node setup-demo-session.js",
+    "pre-commit": "./scripts/pre-commit-check.sh",
+    "deploy-check": "./scripts/vercel-deploy-check.sh",
+    "validate": "npm run lint && npm run build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

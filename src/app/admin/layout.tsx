@@ -4,7 +4,7 @@ import { Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import routerProvider from "@refinedev/nextjs-router";
 import dataProvider from "@refinedev/simple-rest";
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -31,7 +31,7 @@ import {
   ChevronRight
 } from "lucide-react";
 
-export default function AdminLayout({
+function AdminLayoutContent({
   children,
 }: {
   children: React.ReactNode;
@@ -211,6 +211,25 @@ export default function AdminLayout({
         <RefineKbar />
       </Refine>
     </RefineKbarProvider>
+  );
+}
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando panel de administración...</p>
+        </div>
+      </div>
+    }>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </Suspense>
   );
 }
 
