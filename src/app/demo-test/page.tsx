@@ -43,7 +43,7 @@ export default function DemoTestPage() {
         setLoading(false);
       }
     } catch (error) {
-      console.error("Error:", error);
+      // Error en la autenticación demo
       alert("Error al iniciar sesión");
       setLoading(false);
     }

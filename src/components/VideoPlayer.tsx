@@ -55,7 +55,7 @@ export default function VideoPlayer({
     const player = new Player(iframeRef.current);
 
     player.setCurrentTime(initialTimestamp).catch((error) => {
-      console.warn("Error al establecer el tiempo inicial:", error);
+      // Error al establecer el tiempo inicial del video
     });
 
     player.on('timeupdate', throttledSaveProgress);

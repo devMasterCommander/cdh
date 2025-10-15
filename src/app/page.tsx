@@ -1,122 +1,180 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { BookOpen, Users, Award, Shield, ArrowRight, Star } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="font-sans min-h-screen">
+    <div className="font-sans min-h-screen bg-gradient-to-br from-background to-muted/20">
       {/* Banner Demo - Solo en desarrollo */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4">
+        <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-3 px-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <p className="text-sm font-medium">
               🎭 <strong>Usuario Demo disponible</strong> - Prueba el dashboard sin configuración
             </p>
-            <a 
+            <Link 
               href="/demo-login"
-              className="bg-white text-purple-600 px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors"
+              className="bg-white text-primary px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors"
             >
               Login Demo →
-            </a>
+            </Link>
           </div>
         </div>
       )}
       
-      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-[calc(100vh-52px)] p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Header */}
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-cinzel font-bold text-foreground">CDH</h1>
+                <p className="text-sm text-muted-foreground font-courgette">Centro de Desarrollo Humano</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Link href="/cursos">
+                <Button variant="ghost">Cursos</Button>
+              </Link>
+              <Link href="/auth/signin">
+                <Button>Iniciar Sesión</Button>
+              </Link>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </header>
+
+      {/* Hero Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto text-center">
+          <div className="max-w-4xl mx-auto">
+            <Badge variant="secondary" className="mb-4">
+              <Star className="w-4 h-4 mr-1" />
+              Plataforma de Aprendizaje Online
+            </Badge>
+            <h2 className="text-5xl font-cinzel font-bold text-foreground mb-6">
+              Transforma tu vida a través del conocimiento
+            </h2>
+            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+              Accede a cursos especializados, desarrolla nuevas habilidades y forma parte de nuestra 
+              comunidad de aprendizaje continuo. Tu crecimiento personal y profesional comienza aquí.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/cursos">
+                <Button size="lg" className="w-full sm:w-auto">
+                  <BookOpen className="w-5 h-5 mr-2" />
+                  Explorar Cursos
+                </Button>
+              </Link>
+              <Link href="/auth/signin">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                  Comenzar Ahora
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 px-4 bg-muted/30">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-cinzel font-bold text-foreground mb-4">
+              ¿Por qué elegir CDH?
+            </h3>
+            <p className="text-lg text-muted-foreground">
+              Ofrecemos una experiencia de aprendizaje única y completa
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="text-center">
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <BookOpen className="w-6 h-6 text-primary" />
+                </div>
+                <CardTitle>Cursos Especializados</CardTitle>
+                <CardDescription>
+                  Contenido de alta calidad diseñado por expertos en cada área
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="text-center">
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-6 h-6 text-primary" />
+                </div>
+                <CardTitle>Comunidad Activa</CardTitle>
+                <CardDescription>
+                  Conecta con otros estudiantes y comparte experiencias de aprendizaje
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="text-center">
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Award className="w-6 h-6 text-primary" />
+                </div>
+                <CardTitle>Programa de Afiliados</CardTitle>
+                <CardDescription>
+                  Gana comisiones recomendando nuestros cursos a otros
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 px-4">
+        <div className="container mx-auto text-center">
+          <div className="max-w-2xl mx-auto">
+            <h3 className="text-3xl font-cinzel font-bold text-foreground mb-4">
+              ¿Listo para comenzar tu viaje de aprendizaje?
+            </h3>
+            <p className="text-lg text-muted-foreground mb-8">
+              Únete a miles de estudiantes que ya están transformando sus vidas con CDH
+            </p>
+            <Link href="/cursos">
+              <Button size="lg" className="w-full sm:w-auto">
+                Ver Todos los Cursos
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="flex items-center space-x-3 mb-4 md:mb-0">
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
+                <Shield className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="font-cinzel font-bold text-foreground">CDH</p>
+                <p className="text-xs text-muted-foreground font-courgette">Centro de Desarrollo Humano</p>
+              </div>
+            </div>
+            <div className="text-center md:text-right">
+              <p className="text-sm text-muted-foreground">
+                © 2024 CDH. Transformando vidas a través del conocimiento.
+              </p>
+            </div>
+          </div>
+        </div>
       </footer>
-      </div>
     </div>
   );
 }

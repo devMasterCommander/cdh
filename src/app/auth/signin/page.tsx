@@ -34,7 +34,7 @@ export default function SignInPage() {
         alert("Error al enviar el email. Por favor, intenta de nuevo.");
       }
     } catch (error) {
-      console.error("Error:", error);
+      // Error en el proceso de autenticación
       alert("Error al procesar la solicitud");
     } finally {
       setIsLoading(false);

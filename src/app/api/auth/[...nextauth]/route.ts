@@ -48,7 +48,7 @@ export const authOptions = {
               sponsorId: referrer.id,
             },
           });
-          console.log(`[NextAuth] Usuario ${newUser.email} asignado al patrocinador ${referrer.email}`);
+          // Usuario asignado al patrocinador
         }
       }
       /* fin lógica de asignación de patrocinador */
