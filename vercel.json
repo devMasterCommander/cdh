@@ -37,6 +37,17 @@
     {
       "source": "/ref/:slug*",
       "destination": "/"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "https://app.clubdedesarrollohumano.com/admin/$1"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "https://app.clubdedesarrollohumano.com/admin",
+      "permanent": false
     }
   ]
 }

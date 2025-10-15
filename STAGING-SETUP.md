@@ -1,25 +1,39 @@
-# 🚀 Configuración de Staging - CDH
+# 🚀 Configuración Híbrida - CDH
 
-## 📋 Variables de Entorno para Staging
+## 🏗️ Arquitectura Híbrida
+
+```
+Frontend (Vercel) → clubdedesarrollohumano.com
+├── 🎨 Landing page y cursos públicos
+├── 👤 Dashboard usuario/afiliado
+└── 🔗 Redirección admin → app.clubdedesarrollohumano.com
+
+Backend (VPS) → app.clubdedesarrollohumano.com
+├── ⚙️ Admin Panel completo
+├── 🗄️ API Backend
+└── 🔗 Conexión a Supabase
+```
+
+## 📋 Variables de Entorno para Frontend (Vercel)
 
 Configura estas variables en Vercel Dashboard → Settings → Environment Variables:
 
 ```env
-# Base de datos (usar instancia separada para staging)
-DATABASE_URL="postgresql://usuario:password@host:5432/cdh_staging"
+# Base de datos (Supabase)
+DATABASE_URL="postgresql://postgres:[password]@db.[project].supabase.co:5432/postgres"
+DIRECT_URL="postgresql://postgres:[password]@db.[project].supabase.co:5432/postgres"
 
-# NextAuth
-NEXTAUTH_URL="https://staging.clubdedesarrollohumano.com"
-NEXTAUTH_SECRET="tu-secret-key-para-staging"
+# NextAuth (Frontend)
+NEXTAUTH_URL="https://clubdedesarrollohumano.com"
+NEXTAUTH_SECRET="tu-secret-key-para-frontend"
 
-# Google OAuth (crear credenciales separadas para staging)
-GOOGLE_CLIENT_ID="tu-google-client-id-staging"
-GOOGLE_CLIENT_SECRET="tu-google-client-secret-staging"
+# Google OAuth (Frontend)
+GOOGLE_CLIENT_ID="tu-google-client-id"
+GOOGLE_CLIENT_SECRET="tu-google-client-secret"
 
-# Stripe (usar claves de test para staging)
-STRIPE_PUBLIC_KEY="pk_test_..."
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
+# Stripe (Frontend - claves públicas)
+STRIPE_PUBLIC_KEY="pk_live_..."
+NEXT_PUBLIC_STRIPE_PUBLIC_KEY="pk_live_..."
 
 # Vimeo
 VIMEO_ACCESS_TOKEN="tu-vimeo-token"
@@ -30,51 +44,63 @@ NODE_ENV="production"
 
 ## 🌐 Configuración DNS
 
-Agregar en tu proveedor de DNS:
-
+### Frontend (Vercel)
 ```
 Tipo: CNAME
-Nombre: staging
+Nombre: www
 Valor: cname.vercel-dns.com
+TTL: 3600
+
+Tipo: A
+Nombre: @
+Valor: 76.76.19.61
+TTL: 3600
+```
+
+### Backend (VPS)
+```
+Tipo: A
+Nombre: app
+Valor: IP_DEL_VPS
 TTL: 3600
 ```
 
 ## 📝 Pasos de Configuración
 
-1. **Vercel Dashboard**:
-   - Importar proyecto desde GitHub
-   - Configurar dominio: `staging.clubdedesarrollohumano.com`
-   - Configurar rama: `staging`
+### 1. Frontend (Vercel)
+- **Importar proyecto** desde GitHub
+- **Configurar dominio**: `clubdedesarrollohumano.com`
+- **Configurar rama**: `feature/hybrid-deployment`
+- **Variables de entorno**: Agregar las listadas arriba
 
-2. **Variables de Entorno**:
-   - Agregar todas las variables listadas arriba
-   - Usar credenciales separadas para staging
+### 2. Backend (VPS)
+- **Subir proyecto** al VPS
+- **Configurar dominio**: `app.clubdedesarrollohumano.com`
+- **Variables de entorno**: Configurar para backend
+- **Nginx + SSL**: Configurar proxy inverso
 
-3. **Base de Datos**:
-   - Crear instancia separada para staging
-   - Ejecutar migraciones de Prisma
+### 3. Base de Datos (Supabase)
+- **Crear proyecto** en Supabase
+- **Configurar conexión** desde ambos servicios
+- **Ejecutar migraciones** de Prisma
 
-4. **Google OAuth**:
-   - Crear proyecto separado en Google Console
-   - Agregar dominio de staging a URLs autorizadas
+## 🚀 Deploy Express con Dominios Temporales
 
-5. **Stripe**:
-   - Usar claves de test (no producción)
-   - Configurar webhooks para staging
-
-## 🔄 Deploy Automático
-
-El staging se actualizará automáticamente cuando hagas push a la rama `staging`:
-
+### Frontend (Vercel)
 ```bash
-git checkout staging
-git merge develop
-git push origin staging
+# Usar dominio temporal de Vercel
+# Ejemplo: cdh-frontend-abc123.vercel.app
+```
+
+### Backend (VPS)
+```bash
+# Usar IP directa temporalmente
+# Ejemplo: http://123.456.789.012:3001
 ```
 
 ## 🧪 Testing
 
 Una vez configurado, puedes probar en:
-- https://staging.clubdedesarrollohumano.com
-- Usar credenciales de test
-- Verificar todas las funcionalidades
+- **Frontend**: `https://cdh-frontend-abc123.vercel.app`
+- **Backend**: `http://123.456.789.012:3001/admin`
+- **Redirección**: `/admin` → Backend automáticamente
