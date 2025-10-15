@@ -44,7 +44,7 @@ export default function MiPerfilPage() {
       const response = await fetch("/api/admin/usuarios");
       if (response.ok) {
         const usuarios = await response.json();
-        const user = usuarios.find((u: any) => u.email === session?.user?.email);
+        const user = usuarios.find((u: { email: string; name?: string }) => u.email === session?.user?.email);
         if (user) {
           setUserData(user);
           setFormData({ name: user.name || "", email: user.email || "" });
@@ -84,15 +84,6 @@ export default function MiPerfilPage() {
     }
   };
 
-  const getUserTypeLabel = (type: string) => {
-    const labels: { [key: string]: string } = {
-      GUEST: "Invitado",
-      CUSTOMER: "Cliente",
-      AFFILIATE: "Afiliado",
-      ADMIN: "Administrador",
-    };
-    return labels[type] || type;
-  };
 
   const getUserTypeBadge = (type: string) => {
     switch (type) {
