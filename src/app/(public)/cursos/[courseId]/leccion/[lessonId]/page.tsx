@@ -1,8 +1,8 @@
 // src/app/cursos/[courseId]/leccion/[lessonId]/page.tsx
 
 import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
 import VideoPlayer from '@/components/VideoPlayer';
+import Link from 'next/link';
 import { getServerSession } from 'next-auth/next'; // Importamos getServerSession
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'; // Importamos authOptions
 
@@ -86,12 +86,12 @@ export default async function LessonPage({
             </div>
             <h1 className="text-2xl font-cinzel font-bold text-foreground mb-2">Acceso Denegado</h1>
             <p className="text-muted-foreground mb-6">No has comprado este curso o la lección no existe.</p>
-            <a
+            <Link
               href="/cursos"
               className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-lg font-medium transition-colors"
             >
               Ver Catálogo de Cursos
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -47,11 +47,11 @@ export default function CursosPage() {
           const purchasesRes = await fetch("/api/my-courses");
           if (purchasesRes.ok) {
             const purchases = await purchasesRes.json();
-            purchasedCourseIds = purchases.map((p: any) => p.course.id);
+            purchasedCourseIds = purchases.map((p: { course: { id: string } }) => p.course.id);
           }
         }
 
-        const cursosFormateados = data.map((curso: any) => ({
+        const cursosFormateados = data.map((curso: { id: string; name: string; price: number; _count: { modules: number }; modules?: { lessons: { id: string }[] }[] }) => ({
           id: curso.id,
           name: curso.name,
           price: curso.price,
