@@ -1,11 +1,11 @@
 // src/app/curso/page.tsx
 "use client"; // Directiva para convertirlo en un Componente de Cliente
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function CoursePage() {
+function CoursePageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -118,5 +118,20 @@ export default function CoursePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CoursePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <CoursePageContent />
+    </Suspense>
   );
 }
