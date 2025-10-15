@@ -221,10 +221,10 @@ export default function CursoDetailPage({ params }: Params) {
       return;
     }
 
-    const module = curso?.modules.find(m => m.id === moduleId);
-    if (!module) return;
+    const moduleData = curso?.modules.find(m => m.id === moduleId);
+    if (!moduleData) return;
 
-    const lessons = [...module.lessons];
+    const lessons = [...moduleData.lessons];
     const draggedIndex = lessons.findIndex(l => l.id === draggedLesson);
     const targetIndex = lessons.findIndex(l => l.id === targetLessonId);
 

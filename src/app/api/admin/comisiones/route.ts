@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status"); // "pending", "paid", or null for all
     const affiliateId = searchParams.get("affiliateId");
 
-    const where: any = {};
+    const where: Record<string, any> = {};
 
     if (status) {
       where.status = status;

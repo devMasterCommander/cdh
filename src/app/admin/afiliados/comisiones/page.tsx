@@ -177,7 +177,7 @@ export default function ComisionesPage() {
   };
 
   // Agrupar comisiones por afiliado
-  const agrupadoPorAfiliado = filteredComisiones.reduce((acc: any, c) => {
+  const agrupadoPorAfiliado = filteredComisiones.reduce((acc: Record<string, { affiliate: any; comisiones: any[] }>, c) => {
     if (!acc[c.affiliate.id]) {
       acc[c.affiliate.id] = {
         affiliate: c.affiliate,
@@ -491,7 +491,7 @@ export default function ComisionesPage() {
 
       {/* Tabla agrupada por Afiliado */}
       <div className="space-y-4">
-        {Object.values(agrupadoPorAfiliado).map((group: any) => {
+        {Object.values(agrupadoPorAfiliado).map((group: { affiliate: any; comisiones: Commission[] }) => {
           const totalAfiliado = group.comisiones.reduce((sum: number, c: Commission) => sum + c.amount, 0);
           const canSelect = group.comisiones.every((c: Commission) => c.status === "APPROVED");
           const allSelected = group.comisiones.every((c: Commission) => selectedCommissions.includes(c.id));
@@ -624,7 +624,7 @@ export default function ComisionesPage() {
                     No hay comisiones con este estado
                   </h2>
                   <p className="text-muted-foreground">
-                    No hay comisiones con estado "{getStatusLabel(filterStatus)}"
+                    No hay comisiones con estado &quot;{getStatusLabel(filterStatus)}&quot;
                   </p>
                 </div>
               </div>
