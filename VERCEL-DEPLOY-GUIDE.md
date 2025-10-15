@@ -1,6 +1,7 @@
 # 🚀 Guía de Deploy en Vercel - CDH
 
 > **Última actualización**: $(date)
+> **Estado**: Deployment forzado para usar commit correcto
 
 ## 📋 Pasos para Deploy Express
 
