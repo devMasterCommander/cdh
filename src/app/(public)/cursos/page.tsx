@@ -57,7 +57,7 @@ export default function CursosPage() {
           price: curso.price,
           modules: curso._count.modules,
           lessons: curso.modules?.reduce(
-            (total: number, mod: any) => total + (mod.lessons?.length || 0),
+            (total: number, mod: { lessons?: { id: string }[] }) => total + (mod.lessons?.length || 0),
             0
           ) || 0,
           isPurchased: purchasedCourseIds.includes(curso.id),

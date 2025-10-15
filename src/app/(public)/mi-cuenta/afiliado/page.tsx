@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -27,7 +25,6 @@ import {
   Share2,
   Target,
   Calendar,
-  User,
   BookOpen,
   AlertCircle,
   CheckCircle2,
@@ -89,7 +86,6 @@ export default function AfiliadoPage() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [requesting, setRequesting] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     fetchStats();
@@ -143,15 +139,6 @@ export default function AfiliadoPage() {
     }
   };
 
-  const getStatusLabel = (status: string) => {
-    const labels: { [key: string]: string } = {
-      NONE: "No solicitado",
-      PENDING: "Pendiente de aprobación",
-      APPROVED: "Aprobado",
-      REJECTED: "Rechazado",
-    };
-    return labels[status] || status;
-  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
