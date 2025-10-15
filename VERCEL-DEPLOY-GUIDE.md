@@ -1,5 +1,7 @@
 # 🚀 Guía de Deploy en Vercel - CDH
 
+> **Última actualización**: $(date)
+
 ## 📋 Pasos para Deploy Express
 
 ### 1. Acceder a Vercel Dashboard
