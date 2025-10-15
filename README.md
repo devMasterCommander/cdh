@@ -172,17 +172,23 @@ npm run setup:demo   # Configurar usuario demo
 npm run demo:session # Crear sesión demo
 ```
 
-## 🏗️ Arquitectura Desacoplada (Futuro)
+## 🏗️ Arquitectura Desacoplada
 
-El proyecto está preparado para una arquitectura desacoplada:
+El proyecto está configurado para una arquitectura desacoplada:
 
-- **Backend (VPS)**: API + Admin Panel
-- **Frontend (Vercel)**: UI pública + Dashboard usuario
-- **Beneficios**: Control total, costos reducidos (~€5-15/mes vs €50-200/mes)
+- **Backend (VPS OVH)**: API + Admin Panel + Base de datos
+- **Frontend (Vercel)**: UI pública + Dashboard usuario/afiliado
+- **Comunicación**: API REST entre servicios
+- **Beneficios**: Control total, costos reducidos (~€5-15/mes vs €50-200/mes Vercel Pro)
 
-Para implementar:
+### **Implementación**
 ```bash
+# Separar el proyecto en dos repositorios
 node scripts/split-project.js
+
+# Esto creará:
+# - ../cdh-backend/ (para VPS OVH)
+# - ../cdh-frontend/ (para Vercel)
 ```
 
 ## 🧪 Usuario Demo
@@ -241,9 +247,10 @@ npm run build
 - **Local**: `npm run dev`
 - **Staging**: Rama `staging` → Vercel
 
-### **Producción**
-- **Monolítico**: Deploy completo en Vercel
-- **Desacoplado**: Backend en VPS + Frontend en Vercel
+### **Producción (Arquitectura Desacoplada)**
+- **Backend**: VPS OVH (API + Admin Panel)
+- **Frontend**: Vercel (UI pública + Dashboard usuario)
+- **Beneficios**: Control total, costos reducidos (~€5-15/mes vs €50-200/mes Vercel Pro)
 
 ## 📄 Licencia
 
