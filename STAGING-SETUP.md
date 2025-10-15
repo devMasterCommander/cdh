@@ -1,20 +1,21 @@
 # 🚀 Configuración Híbrida - CDH
 
-## 🏗️ Arquitectura Híbrida
+## 🏗️ Arquitectura Híbrida (FASE 1)
 
 ```
-Frontend (Vercel) → clubdedesarrollohumano.com
+UN SOLO SERVIDOR (Vercel) → clubdedesarrollohumano.com
 ├── 🎨 Landing page y cursos públicos
-├── 👤 Dashboard usuario/afiliado
-└── 🔗 Redirección admin → app.clubdedesarrollohumano.com
-
-Backend (VPS) → app.clubdedesarrollohumano.com
-├── ⚙️ Admin Panel completo
-├── 🗄️ API Backend
+├── 👤 Dashboard usuario/afiliado (/mi-cuenta)
+├── ⚙️ Admin Panel (/admin)
+├── 🗄️ API Backend (/api)
 └── 🔗 Conexión a Supabase
+
+FASE 2 (FUTURO): Separación progresiva
+├── Frontend → Vercel
+└── Backend → VPS
 ```
 
-## 📋 Variables de Entorno para Frontend (Vercel)
+## 📋 Variables de Entorno para Servidor Completo (Vercel)
 
 Configura estas variables en Vercel Dashboard → Settings → Environment Variables:
 
@@ -23,16 +24,18 @@ Configura estas variables en Vercel Dashboard → Settings → Environment Varia
 DATABASE_URL="postgresql://postgres:[password]@db.[project].supabase.co:5432/postgres"
 DIRECT_URL="postgresql://postgres:[password]@db.[project].supabase.co:5432/postgres"
 
-# NextAuth (Frontend)
+# NextAuth (Servidor completo)
 NEXTAUTH_URL="https://clubdedesarrollohumano.com"
-NEXTAUTH_SECRET="tu-secret-key-para-frontend"
+NEXTAUTH_SECRET="tu-secret-key-para-servidor"
 
-# Google OAuth (Frontend)
+# Google OAuth (Servidor completo)
 GOOGLE_CLIENT_ID="tu-google-client-id"
 GOOGLE_CLIENT_SECRET="tu-google-client-secret"
 
-# Stripe (Frontend - claves públicas)
+# Stripe (Servidor completo - claves completas)
 STRIPE_PUBLIC_KEY="pk_live_..."
+STRIPE_SECRET_KEY="sk_live_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
 NEXT_PUBLIC_STRIPE_PUBLIC_KEY="pk_live_..."
 
 # Vimeo
@@ -44,7 +47,7 @@ NODE_ENV="production"
 
 ## 🌐 Configuración DNS
 
-### Frontend (Vercel)
+### Servidor Completo (Vercel)
 ```
 Tipo: CNAME
 Nombre: www
@@ -57,50 +60,47 @@ Valor: 76.76.19.61
 TTL: 3600
 ```
 
-### Backend (VPS)
-```
-Tipo: A
-Nombre: app
-Valor: IP_DEL_VPS
-TTL: 3600
-```
-
 ## 📝 Pasos de Configuración
 
-### 1. Frontend (Vercel)
+### 1. Servidor Completo (Vercel)
 - **Importar proyecto** desde GitHub
 - **Configurar dominio**: `clubdedesarrollohumano.com`
 - **Configurar rama**: `feature/hybrid-deployment`
 - **Variables de entorno**: Agregar las listadas arriba
 
-### 2. Backend (VPS)
-- **Subir proyecto** al VPS
-- **Configurar dominio**: `app.clubdedesarrollohumano.com`
-- **Variables de entorno**: Configurar para backend
-- **Nginx + SSL**: Configurar proxy inverso
-
-### 3. Base de Datos (Supabase)
+### 2. Base de Datos (Supabase)
 - **Crear proyecto** en Supabase
-- **Configurar conexión** desde ambos servicios
+- **Configurar conexión** desde Vercel
 - **Ejecutar migraciones** de Prisma
 
-## 🚀 Deploy Express con Dominios Temporales
+### 3. Google OAuth
+- **Configurar dominio** en Google Console
+- **Agregar URLs autorizadas**: `clubdedesarrollohumano.com`
 
-### Frontend (Vercel)
+### 4. Stripe
+- **Configurar webhooks** para `clubdedesarrollohumano.com`
+- **Usar claves de producción**
+
+## 🚀 Deploy Express con Dominio Temporal
+
+### Servidor Completo (Vercel)
 ```bash
 # Usar dominio temporal de Vercel
-# Ejemplo: cdh-frontend-abc123.vercel.app
-```
-
-### Backend (VPS)
-```bash
-# Usar IP directa temporalmente
-# Ejemplo: http://123.456.789.012:3001
+# Ejemplo: cdh-hybrid-abc123.vercel.app
 ```
 
 ## 🧪 Testing
 
 Una vez configurado, puedes probar en:
-- **Frontend**: `https://cdh-frontend-abc123.vercel.app`
-- **Backend**: `http://123.456.789.012:3001/admin`
-- **Redirección**: `/admin` → Backend automáticamente
+- **Landing**: `https://cdh-hybrid-abc123.vercel.app`
+- **Cursos**: `https://cdh-hybrid-abc123.vercel.app/cursos`
+- **Mi Cuenta**: `https://cdh-hybrid-abc123.vercel.app/mi-cuenta`
+- **Admin**: `https://cdh-hybrid-abc123.vercel.app/admin`
+- **API**: `https://cdh-hybrid-abc123.vercel.app/api`
+
+## 🔄 FASE 2: Separación Progresiva (FUTURO)
+
+Cuando esté listo para separar:
+1. **Frontend** → Vercel (mantener)
+2. **Backend** → VPS (migrar)
+3. **Configurar** redirecciones
