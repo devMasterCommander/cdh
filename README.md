@@ -1,18 +1,18 @@
-# 🎓 CDH - Centro de Desarrollo Humano
+# CDH - Centro de Desarrollo Humano
 
 Plataforma de aprendizaje online con sistema de afiliados, construida con Next.js 15, Prisma, PostgreSQL, NextAuth y Stripe.
 
-## 🚀 Estado Actual del Proyecto
+## Estado Actual del Proyecto
 
-- ✅ **Versión**: v1.0.0-stable
-- ✅ **Funcionalidades**: Completas y operativas
-- ✅ **Menú responsive**: Implementado en admin y usuario
-- ✅ **Sistema de afiliados**: Funcional con comisiones automáticas
-- ✅ **Reproductor de video**: Vimeo integrado con progreso
-- ✅ **Pagos**: Stripe configurado y operativo
-- ✅ **Autenticación**: NextAuth con Google OAuth
+- **Versión**: v1.0.0-stable
+- **Funcionalidades**: Completas y operativas
+- **Menú responsive**: Implementado en admin y usuario
+- **Sistema de afiliados**: Funcional con comisiones automáticas
+- **Reproductor de video**: Vimeo integrado con progreso
+- **Pagos**: Stripe configurado y operativo
+- **Autenticación**: NextAuth con Google OAuth
 
-## 🏗️ Arquitectura del Proyecto
+## Arquitectura del Proyecto
 
 ### **Stack Tecnológico**
 - **Framework**: Next.js 15 con Turbopack
@@ -62,16 +62,16 @@ cdh/
 └── package.json
 ```
 
-## 🚀 Inicio Rápido
+## Inicio Rápido
 
-### **Requisitos Previos**
+### Requisitos Previos
 - Node.js 18+
 - PostgreSQL (Supabase recomendado)
 - Cuenta de Stripe
 - Credenciales de Google OAuth
 - Token de Vimeo
 
-### **1. Instalación**
+### 1. Instalación
 ```bash
 # Clonar el repositorio
 git clone https://github.com/devMasterCommander/cdh.git
@@ -81,7 +81,7 @@ cd cdh
 npm install
 ```
 
-### **2. Configuración de Variables de Entorno**
+### 2. Configuración de Variables de Entorno
 Crea un archivo `.env.local` en la raíz del proyecto:
 
 ```env
@@ -106,7 +106,7 @@ STRIPE_WEBHOOK_SECRET="whsec_..."
 VIMEO_ACCESS_TOKEN="tu-token"
 ```
 
-### **3. Configurar Base de Datos**
+### 3. Configurar Base de Datos
 ```bash
 # Sincronizar esquema
 npx prisma db push
@@ -118,41 +118,41 @@ npx prisma generate
 npx prisma studio
 ```
 
-### **4. Iniciar Desarrollo**
+### 4. Iniciar Desarrollo
 ```bash
 npm run dev
 ```
 
 Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-## 🎯 Funcionalidades Principales
+## Funcionalidades Principales
 
-### **👥 Sistema de Usuarios**
+### Sistema de Usuarios
 - **Tipos**: Guest, Customer, Affiliate, Admin
 - **Autenticación**: Google OAuth + Magic Links
 - **Perfiles**: Gestión completa de datos personales
 - **Afiliados**: Sistema de referidos con comisiones
 
-### **📚 Gestión de Cursos**
+### Gestión de Cursos
 - **Estructura**: Cursos → Módulos → Lecciones
 - **Videos**: Integración con Vimeo
 - **Progreso**: Seguimiento automático de visualización
 - **Compras**: Integración con Stripe
 
-### **💰 Sistema de Afiliados**
+### Sistema de Afiliados
 - **Referidos**: URLs personalizadas (`/ref/slug`)
 - **Comisiones**: Cálculo automático al comprar
 - **Estados**: Pending, Approved, Declined, Paid
 - **Pagos**: Gestión desde panel de admin
 
-### **🖥️ Panel de Administración**
+### Panel de Administración
 - **Gestión de cursos**: CRUD completo
 - **Gestión de usuarios**: Asignación de patrocinadores
 - **Gestión de afiliados**: Aprobación y pagos
 - **Transacciones**: Seguimiento de pagos
 - **Responsive**: Menú lateral colapsable
 
-## 🔧 Comandos Útiles
+## Comandos Útiles
 
 ```bash
 # Desarrollo
@@ -172,7 +172,7 @@ npm run setup:demo   # Configurar usuario demo
 npm run demo:session # Crear sesión demo
 ```
 
-## 🏗️ Arquitectura Desacoplada
+## Arquitectura Desacoplada
 
 El proyecto está configurado para una arquitectura desacoplada:
 
@@ -181,7 +181,7 @@ El proyecto está configurado para una arquitectura desacoplada:
 - **Comunicación**: API REST entre servicios
 - **Beneficios**: Control total, costos reducidos (~€5-15/mes vs €50-200/mes Vercel Pro)
 
-### **Implementación**
+### Implementación
 ```bash
 # Separar el proyecto en dos repositorios
 node scripts/split-project.js
@@ -191,15 +191,15 @@ node scripts/split-project.js
 # - ../cdh-frontend/ (para Vercel)
 ```
 
-## 🧪 Usuario Demo
+## Usuario Demo
 
 Para pruebas rápidas:
 - **Email**: demo@cdh.com
 - **Acceso**: [http://localhost:3000/demo-login](http://localhost:3000/demo-login)
 
-## 📊 Modelos de Base de Datos
+## Modelos de Base de Datos
 
-### **Entidades Principales**
+### Entidades Principales
 - **User**: Usuarios con sistema de afiliados
 - **Course/Module/Lesson**: Estructura de cursos
 - **LessonProgress**: Progreso de usuarios
@@ -207,51 +207,51 @@ Para pruebas rápidas:
 - **Commission**: Comisiones de afiliados
 - **Account/Session**: NextAuth
 
-### **Enums**
+### Enums
 - **UserType**: GUEST, CUSTOMER, AFFILIATE, ADMIN
 - **CommissionStatus**: PENDING, APPROVED, DECLINED, PAID
 - **AffiliateRequestStatus**: NONE, PENDING, APPROVED, REJECTED
 
-## 🚨 Solución de Problemas
+## Solución de Problemas
 
-### **Base de datos inactiva**
+### Base de datos inactiva
 ```bash
 # Verificar conexión
 npx prisma db push
 npx prisma generate
 ```
 
-### **Error de autenticación**
+### Error de autenticación
 ```bash
 # Regenerar secret
 openssl rand -base64 32
 ```
 
-### **Problemas de build**
+### Problemas de build
 ```bash
 # Limpiar caché
 rm -rf .next
 npm run build
 ```
 
-## 📚 Documentación
+## Documentación
 
 - **Documentación completa**: `projects_docs/`
 - **Arquitectura**: `projects_docs/ARCHITECTURE-PLAN.md`
 - **Configuración Backend**: `projects_docs/BACKEND-ENV.md`
 - **Configuración Frontend**: `projects_docs/FRONTEND-ENV.md`
 
-## 🔄 Deploy
+## Deploy
 
-### **Desarrollo**
+### Desarrollo
 - **Local**: `npm run dev`
 - **Staging**: Rama `staging` → Vercel
 
-### **Producción (Arquitectura Desacoplada)**
+### Producción (Arquitectura Desacoplada)
 - **Backend**: VPS OVH (API + Admin Panel)
 - **Frontend**: Vercel (UI pública + Dashboard usuario)
 - **Beneficios**: Control total, costos reducidos (~€5-15/mes vs €50-200/mes Vercel Pro)
 
-## 📄 Licencia
+## Licencia
 
 Proyecto privado - Centro de Desarrollo Humano
