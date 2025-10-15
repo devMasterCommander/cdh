@@ -19,6 +19,9 @@ import {
   User
 } from "lucide-react";
 
+// Forzar renderizado dinámico para evitar prerendering
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   // Obtener métricas básicas
   const [totalUsers, totalPurchases, totalCourses] = await Promise.all([
